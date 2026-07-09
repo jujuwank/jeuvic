@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--============================================================
+                          META
+  =============================================================-->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JEUVIC - Plateforme de jeux</title>
+
+  <!--============================================================
+                          CORE CSS
+  =============================================================-->
+  <link rel="stylesheet" href="assets/css/core/variables.css" />
+  <link rel="stylesheet" href="assets/css/core/reset.css" />
+  <link rel="stylesheet" href="assets/css/core/typography.css" />
+
+  <!--============================================================
+                          LAYOUT CSS
+  =============================================================-->
+  <link rel="stylesheet" href="assets/css/layout/layout.css" />
+  <link rel="stylesheet" href="assets/css/layout/header.css" />
+  <link rel="stylesheet" href="assets/css/layout/hero.css" />
+  <link rel="stylesheet" href="assets/css/layout/footer.css" />
+
+  <!--============================================================
+                          COMPONENTS CSS
+  =============================================================-->
+  <link rel="stylesheet" href="assets/css/components/buttons.css" />
+  <link rel="stylesheet" href="assets/css/components/cards.css" />
+  <link rel="stylesheet" href="assets/css/components/forms.css" />
+  <link rel="stylesheet" href="assets/css/components/modal.css" />
+  <link rel="stylesheet" href="assets/css/components/tables.css" />
+
+  <!--============================================================
+                          PAGES CSS
+  =============================================================-->
+  <link rel="stylesheet" href="assets/css/pages/home.css" />
+  <link rel="stylesheet" href="assets/css/pages/admin.css" />
+  <link rel="stylesheet" href="assets/css/pages/player.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+</head>
+<body>
+  <!--============================================================
+                          HEADER
+  =============================================================-->
+  <header class="jv-header">
+    <h1 class="jv-logo"><span>J</span>EUVIC</h1>
+    <nav class="jv-nav" aria-label="Navigation principale">
+      <a href="#home" data-route="home">Accueil</a>
+      <a href="#games" data-route="games">Jeux</a>
+      <a href="#admin" data-route="admin">Arbitre</a>
+      <a href="#player" data-route="player">Joueur</a>
+    </nav>
+  </header>
+
+  <!--============================================================
+                          MAIN
+  =============================================================-->
+  <main>
+    <!--=========================================================
+                          HERO
+    ==========================================================-->
+    <section id="home" class="jv-hero jv-container">
+      <article class="jv-hero-left">
+        <small>Plateforme de jeux en ligne</small>
+        <h2>Bienvenue sur JEUVIC</h2>
+        <p>
+          Créez vos parties, organisez vos compétitions, vos ligues,
+          vos championnats et invitez les joueurs avec un simple code.
+        </p>
+        <section class="jv-actions" aria-label="Actions principales">
+          <button class="jv-btn jv-btn-primary" data-route="games">Voir les jeux</button>
+          <button class="jv-btn jv-btn-secondary" data-route="admin">Espace arbitre</button>
+        </section>
+      </article>
+      <aside class="jv-hero-right">
+        <article class="jv-card jv-hero-card">
+          <span class="jv-badge" id="versionBadge">Version 0.4.1</span>
+          <h3>JEUVIC Game Launcher</h3>
+          <p>BibleQuizz V1.0.3 est maintenant intégré comme premier jeu officiel.</p>
+          <section class="jv-stat-grid">
+            <article class="jv-stat-card"><strong id="coreStatus">OK</strong><span>Core</span></article>
+            <article class="jv-stat-card"><strong id="eventCount">0</strong><span>Events</span></article>
+          </section>
+        </article>
+      </aside>
+    </section>
+
+    <!--=========================================================
+                          CATALOGUE DES JEUX
+    ==========================================================-->
+    <section id="games" class="jv-section jv-container">
+      <header class="jv-section-title">
+        <small>Catalogue</small>
+        <h2>Jeux disponibles</h2>
+      </header>
+      <section id="gamesList" class="jv-grid jv-games-grid"></section>
+    </section>
+
+    <!--=========================================================
+                          ESPACE ARBITRE
+    ==========================================================-->
+    <section id="admin" class="jv-section jv-container jv-page-panel">
+      <header class="jv-section-title">
+        <small>Administration</small>
+        <h2>Espace arbitre</h2>
+      </header>
+      <section class="jv-two-columns">
+        <form id="gameForm" class="jv-card jv-form-card">
+          <h3>Créer une partie</h3>
+          <label for="gameName">Nom de la partie</label>
+          <input class="jv-input" id="gameName" type="text" placeholder="Ex: Soirée Quiz Famille" required />
+          <label for="gameType">Choisir un jeu</label>
+          <select class="jv-input" id="gameType" required></select>
+          <label for="playersCount">Nombre de joueurs</label>
+          <input class="jv-input" id="playersCount" type="number" min="2" max="50" value="4" required />
+          <label for="gameMode">Mode</label>
+          <select class="jv-input" id="gameMode">
+            <option>Partie simple</option>
+            <option>Compétition</option>
+            <option>Ligue</option>
+            <option>Championnat</option>
+          </select>
+          <label for="roundTime">Temps par manche</label>
+          <select class="jv-input" id="roundTime">
+            <option>30 secondes</option>
+            <option selected>60 secondes</option>
+            <option>90 secondes</option>
+            <option>Illimité</option>
+          </select>
+          <button class="jv-btn jv-btn-primary jv-btn-block" type="submit">Créer la partie</button>
+        </form>
+        <article class="jv-card">
+          <h3>Prévisualisation</h3>
+          <section id="gamePreview" class="jv-empty">Aucune partie créée pour le moment.</section>
+          <h3 class="jv-subtitle">Joueurs</h3>
+          <section id="playersList" class="jv-players-list jv-empty">Aucun joueur inscrit.</section>
+        </article>
+      </section>
+    </section>
+
+    <!--=========================================================
+                          ESPACE JOUEUR
+    ==========================================================-->
+    <section id="player" class="jv-section jv-container jv-page-panel">
+      <header class="jv-section-title">
+        <small>Participation</small>
+        <h2>Espace joueur</h2>
+      </header>
+      <article class="jv-card jv-player-card">
+        <h3>Rejoindre une partie</h3>
+        <input class="jv-input" id="playerName" type="text" placeholder="Nom du joueur" />
+        <input class="jv-input" id="joinCode" type="text" placeholder="Entre le code de la partie" />
+        <button class="jv-btn jv-btn-primary jv-btn-block" id="joinGameBtn">Rejoindre</button>
+        <p id="joinMessage"></p>
+      </article>
+    </section>
+  </main>
+
+  <!--============================================================
+                          FOOTER
+  =============================================================-->
+  <section id="notificationZone" class="jv-notification-zone" aria-live="polite"></section>
+
+  <footer class="jv-footer">© 2026 JEUVIC — Engine V0.4.1</footer>
+
+  <!--============================================================
+                          JAVASCRIPT MODERNE
+  =============================================================-->
+  <script type="module" src="assets/js/core/App.js"></script>
+</body>
+</html>

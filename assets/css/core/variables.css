@@ -1,0 +1,51 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : variables.css
+ * DESCRIPTION : Variables globales de design.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+:root{
+  /* Couleurs principales */
+  --jv-color-primary:#F4C542;
+  --jv-color-secondary:#4F8CFF;
+  --jv-color-success:#00C853;
+  --jv-color-danger:#FF3D57;
+  --jv-color-warning:#FF9800;
+
+  /* Couleurs neutres */
+  --jv-color-white:#FFFFFF;
+  --jv-color-black:#000000;
+  --jv-color-text:#EAEAEA;
+  --jv-color-muted:#AEB7D4;
+  --jv-color-background:#090D17;
+  --jv-color-surface:#141B2D;
+  --jv-color-surface-soft:rgba(255,255,255,.07);
+  --jv-color-border:rgba(255,255,255,.14);
+
+  /* Typographie */
+  --jv-font-family:"Segoe UI", Arial, sans-serif;
+  --jv-font-size-sm:14px;
+  --jv-font-size-md:16px;
+  --jv-font-size-lg:20px;
+  --jv-font-size-title:42px;
+  --jv-font-size-hero:64px;
+
+  /* Espacements */
+  --jv-space-xs:6px;
+  --jv-space-sm:12px;
+  --jv-space-md:20px;
+  --jv-space-lg:40px;
+  --jv-space-xl:80px;
+
+  /* Bordures */
+  --jv-radius-sm:8px;
+  --jv-radius-md:14px;
+  --jv-radius-lg:24px;
+  --jv-radius-xl:32px;
+
+  /* Effets */
+  --jv-transition:.28s ease;
+  --jv-shadow:0 24px 70px rgba(0,0,0,.32);
+  --jv-blur:blur(20px);
+}

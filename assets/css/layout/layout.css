@@ -1,0 +1,23 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : layout.css
+ * DESCRIPTION : Structure générale de page.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+body{
+  background:
+    radial-gradient(circle at top left,rgba(79,140,255,.22),transparent 30%),
+    radial-gradient(circle at bottom right,rgba(244,197,66,.16),transparent 34%),
+    var(--jv-color-background);
+}
+main{width:100%;}
+.jv-container{width:100%;max-width:1400px;margin:0 auto;padding-left:8%;padding-right:8%;}
+.jv-section{padding-top:80px;padding-bottom:80px;}
+.jv-section-title{margin-bottom:34px;}
+.jv-section-title small{color:var(--jv-color-primary);display:block;margin-bottom:10px;}
+.jv-grid{display:grid;gap:22px;}
+.jv-two-columns{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
+.jv-page-panel{scroll-margin-top:100px;}
+.jv-actions{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+.jv-empty{color:var(--jv-color-muted);padding:18px 0;}

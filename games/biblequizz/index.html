@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIBELQUIZZ V1.0.3 - JEUVIC</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><span>JEUVIC</span> / BIBELQUIZZ</div>
+    <nav class="tabs">
+      <button class="tab active" data-screen="admin">Arbitre</button>
+      <button class="tab" data-screen="player">Joueur</button>
+      <button class="tab" data-screen="projection">Projection</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="admin" class="screen active">
+      <div class="panel setup-panel" id="setupPanel">
+        <h1>Configuration BIBELQUIZZ</h1>
+        <div class="grid two">
+          <label>Nombre de manches<input id="roundCount" type="number" min="1" max="20" value="3"></label>
+          <label>Questions par manche<input id="questionsPerRound" type="number" min="1" max="20" value="3"></label>
+          <label>Temps par question (secondes)<input id="questionTime" type="number" min="5" max="300" value="45"></label>
+          <label>Nombre max joueurs<input id="maxPlayers" type="number" min="2" max="15" value="15"></label>
+        </div>
+        <div class="actions"><button id="createGameBtn" class="btn primary">Créer la partie</button></div>
+      </div>
+
+      <div class="panel lobby-panel hidden" id="adminLobbyPanel">
+        <p class="eyebrow">SALLE D’ATTENTE</p>
+        <h1>Partie créée</h1>
+        <p class="lobby-description">Les joueurs peuvent maintenant rejoindre la partie. Le bouton de démarrage reste grisé tant qu'aucun joueur n'est inscrit.</p>
+        <div class="lobby-status-card">
+          <span>Joueurs inscrits</span>
+          <strong id="adminLobbyPlayerCount">0</strong>
+        </div>
+        <div id="adminLobbyPlayers" class="lobby-player-list"></div>
+        <div class="actions">
+          <button id="startGameFromLobbyBtn" class="btn primary lobby-start disabled" disabled>COMMENCER</button>
+        </div>
+      </div>
+
+      <div class="panel admin-board hidden" id="adminBoard">
+        <div class="question-head">
+          <div><p class="eyebrow" id="adminQuestionProgress">QUESTION 1 / 3</p><h2 id="adminQuestion">---</h2></div>
+          <div class="timer-box"><span>Temps : <b id="adminDuration">45 s</b></span><strong id="adminTimer">00:45</strong></div>
+        </div>
+        <div class="meta-row"><span>Manche : <b id="roundInfo">1/3</b></span><span>Points question : <b id="questionPoints">0</b></span></div>
+        <div class="answer-box"><span>Bonne réponse :</span><strong id="adminCorrectAnswer">(cachée)</strong></div>
+        <div id="adminOptions" class="options-preview"></div>
+        <h3>Réponses des participants</h3>
+        <table class="answers-table"><thead><tr><th>Participant</th><th>Réponse</th><th>Points</th></tr></thead><tbody id="answersTable"></tbody></table>
+        <div class="actions split">
+          <button id="startTimerBtn" class="btn primary">LANCER</button>
+          <button id="skipQuestionBtn" class="btn secondary">PASSER</button>
+          <button id="nextQuestionBtn" class="btn success">QUESTION SUIVANTE</button>
+          <button id="nextRoundBtn" class="btn success hidden">MANCHE SUIVANTE</button>
+          <button id="resultsBtn" class="btn danger hidden">RÉSULTATS</button>
+          <button id="endGameBtn" class="btn danger">TERMINER LA PARTIE</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="player" class="screen">
+      <div class="panel player-panel">
+        <h1>Espace Joueur</h1>
+        <div class="join-row"><input id="playerName" placeholder="Nom du joueur"><button id="joinBtn" class="btn primary">Rejoindre</button></div>
+        <div id="playerWaitingArea" class="waiting-screen hidden">
+          <p class="eyebrow">INSCRIPTION VALIDÉE</p>
+          <h2>En attente du lancement</h2>
+          <p>Reste connecté. La première question apparaîtra automatiquement lorsque l'arbitre lancera la partie.</p>
+          <div class="waiting-pill">Joueurs inscrits : <strong id="playerWaitingCount">0</strong></div>
+        </div>
+        <div id="playerGameArea" class="hidden">
+          <div class="player-question"><p id="playerQuestionProgress">QUESTION 1 / 3</p><h2 id="playerQuestion">En attente...</h2><div class="player-timer-line">Temps restant <strong id="playerTimer">00:45</strong></div></div>
+          <div id="playerCorrectAnswer" class="public-answer hidden"></div>
+          <div id="playerOptions" class="choice-list"></div>
+          <label>Votre réponse<input id="playerAnswer" placeholder="Écris ta réponse ici — sauvegarde automatique"></label>
+          <button id="submitAnswerBtn" class="btn primary hidden">VALIDER</button>
+          <p id="playerMessage" class="message"></p>
+          <p>Score : <strong id="playerScore">0</strong> pts</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="projection" class="screen">
+      <div class="projection-card">
+        <p class="eyebrow">BIBELQUIZZ</p>
+        <div id="projectionInfoPanel" class="projection-info-panel"></div>
+        <div id="projectionWaitingArea" class="projection-waiting">
+          <h1>En attente du lancement</h1>
+          <p>Les joueurs peuvent s'inscrire. La partie commencera lorsque l'arbitre appuiera sur <strong>COMMENCER</strong>.</p>
+          <div class="waiting-pill">Joueurs inscrits : <strong id="projectionWaitingCount">0</strong></div>
+        </div>
+        <h1 id="projectionQuestion">En attente du lancement...</h1>
+        <strong id="projectionTimer">00:45</strong>
+        <div id="projectionCorrectAnswer" class="public-answer hidden"></div>
+        <div id="projectionOptions" class="projection-options"></div>
+        <div id="projectionRanking"></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="assets/js/core/App.js"></script>
+</body>
+</html>

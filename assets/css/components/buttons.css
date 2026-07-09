@@ -1,0 +1,33 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : buttons.css
+ * DESCRIPTION : Bibliothèque officielle des boutons JEUVIC.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:48px;padding:13px 22px;border-radius:var(--jv-radius-md);
+  font-weight:850;transition:var(--jv-transition);user-select:none;
+}
+.jv-btn:hover{transform:translateY(-2px);}
+.jv-btn:active{transform:translateY(0);}
+.jv-btn-primary{background:linear-gradient(135deg,var(--jv-color-primary),#FFE07A);color:#151515;}
+.jv-btn-secondary{background:transparent;color:var(--jv-color-white);border:1px solid var(--jv-color-border);}
+.jv-btn-success{background:var(--jv-color-success);color:var(--jv-color-white);}
+.jv-btn-danger{background:var(--jv-color-danger);color:var(--jv-color-white);}
+.jv-btn-warning{background:var(--jv-color-warning);color:#151515;}
+.jv-btn-block{width:100%;}
+.jv-btn-sm{min-height:38px;padding:9px 14px;font-size:14px;}
+.jv-btn-lg{min-height:58px;padding:16px 28px;font-size:18px;}
+.jv-btn[disabled],.jv-btn.is-disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+/*============================================================
+                    V0.3 - BOUTONS COMPACTS
+============================================================*/
+
+.jv-btn-sm{
+    padding:8px 12px;
+    font-size:13px;
+    border-radius:var(--jv-radius-sm);
+}

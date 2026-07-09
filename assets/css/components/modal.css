@@ -1,0 +1,12 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : modal.css
+ * DESCRIPTION : Fenêtres modales réutilisables.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:500;}
+.jv-modal-backdrop.is-visible{display:flex;}
+.jv-modal{width:min(560px,92vw);background:var(--jv-color-surface);border:1px solid var(--jv-color-border);border-radius:var(--jv-radius-lg);padding:28px;box-shadow:var(--jv-shadow);}
+.jv-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.jv-modal-body{color:var(--jv-color-muted);}

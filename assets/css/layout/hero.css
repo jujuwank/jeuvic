@@ -1,0 +1,14 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : hero.css
+ * DESCRIPTION : Section d'accueil principale.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-hero{min-height:calc(100vh - 86px);display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:70px;padding-top:70px;padding-bottom:70px;}
+.jv-hero-left{display:flex;flex-direction:column;gap:24px;}
+.jv-hero-left small{color:var(--jv-color-primary);}
+.jv-hero-left p{font-size:20px;max-width:720px;}
+.jv-hero-right{display:flex;justify-content:center;}
+.jv-hero-card{width:100%;max-width:430px;min-height:330px;display:flex;flex-direction:column;justify-content:center;gap:20px;}
+.jv-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;}

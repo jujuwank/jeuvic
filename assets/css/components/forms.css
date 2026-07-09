@@ -1,0 +1,17 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : forms.css
+ * DESCRIPTION : Formulaires, inputs, select et textarea.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-form-card{display:flex;flex-direction:column;gap:14px;}
+label{color:var(--jv-color-muted);font-weight:800;}
+.jv-input{
+  width:100%;min-height:50px;padding:13px 15px;border-radius:var(--jv-radius-md);
+  border:1px solid var(--jv-color-border);background:rgba(255,255,255,.07);color:var(--jv-color-white);
+  transition:var(--jv-transition);
+}
+.jv-input:focus{border-color:rgba(244,197,66,.65);box-shadow:0 0 0 4px rgba(244,197,66,.10);}
+select.jv-input option{color:#111;}
+textarea.jv-input{min-height:120px;resize:vertical;}

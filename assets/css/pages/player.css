@@ -1,0 +1,9 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : player.css
+ * DESCRIPTION : Styles spécifiques à l'espace joueur.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-player-card{max-width:520px;display:grid;gap:18px;}
+#joinMessage{font-weight:800;color:var(--jv-color-primary);}

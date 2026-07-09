@@ -1,0 +1,32 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : responsive.css
+ * DESCRIPTION : Adaptation tablette et mobile.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+@media (max-width:900px){
+  .jv-header{height:auto;min-height:86px;flex-direction:column;gap:14px;padding-top:16px;padding-bottom:16px;}
+  .jv-nav{flex-wrap:wrap;justify-content:center;gap:16px;}
+  .jv-hero{grid-template-columns:1fr;gap:35px;}
+  .jv-two-columns{grid-template-columns:1fr;}
+}
+@media (max-width:600px){
+  .jv-container{padding-left:5%;padding-right:5%;}
+  .jv-section{padding-top:55px;padding-bottom:55px;}
+  .jv-stat-grid{grid-template-columns:1fr;}
+}
+
+/*============================================================
+                    V0.3 - RESPONSIVE ROOM ENGINE
+============================================================*/
+
+@media(max-width:900px){
+    .jv-player-row{
+        grid-template-columns:1fr;
+    }
+
+    .jv-actions-stack{
+        flex-direction:column;
+    }
+}

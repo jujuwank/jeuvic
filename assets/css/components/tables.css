@@ -1,0 +1,11 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : tables.css
+ * DESCRIPTION : Tables pour classements, joueurs et historiques.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:var(--jv-radius-md);}
+.jv-table th,.jv-table td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--jv-color-border);}
+.jv-table th{color:var(--jv-color-primary);font-size:14px;text-transform:uppercase;letter-spacing:1px;}
+.jv-table td{color:var(--jv-color-text);}

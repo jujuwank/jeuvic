@@ -1,0 +1,76 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : cards.css
+ * DESCRIPTION : Cartes réutilisables JEUVIC.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-card{
+  background:var(--jv-color-surface-soft);border:1px solid var(--jv-color-border);
+  border-radius:var(--jv-radius-lg);padding:28px;box-shadow:var(--jv-shadow);backdrop-filter:var(--jv-blur);
+}
+.jv-game-card{transition:var(--jv-transition);}
+.jv-game-card:hover{transform:translateY(-6px);border-color:rgba(244,197,66,.48);}
+.jv-game-icon{font-size:40px;margin-bottom:16px;}
+.jv-stat-card{padding:18px;border-radius:var(--jv-radius-md);border:1px solid var(--jv-color-border);background:rgba(255,255,255,.05);}
+.jv-stat-card strong{display:block;font-size:34px;color:var(--jv-color-primary);line-height:1;}
+.jv-stat-card span{color:var(--jv-color-muted);font-size:14px;}
+.jv-badge{display:inline-flex;width:max-content;padding:7px 12px;border-radius:999px;background:rgba(244,197,66,.14);border:1px solid rgba(244,197,66,.35);color:var(--jv-color-primary);font-weight:800;font-size:13px;}
+
+/*============================================================
+                    V0.3 - ROOM ENGINE UI
+============================================================*/
+
+.jv-preview h2{
+    color:var(--jv-color-primary);
+    font-size:42px;
+    margin:10px 0 20px;
+}
+
+.jv-subtitle{
+    margin-top:30px;
+    margin-bottom:12px;
+}
+
+.jv-players-list{
+    display:grid;
+    gap:12px;
+}
+
+.jv-player-row{
+    display:grid;
+    grid-template-columns:1fr auto auto auto auto;
+    gap:10px;
+    align-items:center;
+    padding:12px;
+    border:1px solid var(--jv-color-border);
+    border-radius:var(--jv-radius-md);
+    background:rgba(255,255,255,.04);
+}
+
+.jv-actions-stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+}
+
+.jv-notification-zone{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    z-index:999;
+    max-width:360px;
+}
+
+.jv-notice{
+    padding:16px 18px;
+    border-radius:var(--jv-radius-md);
+    background:var(--jv-color-surface);
+    border:1px solid var(--jv-color-border);
+    box-shadow:var(--jv-shadow);
+    color:var(--jv-color-white);
+}
+
+.jv-notice-success{ border-color:var(--jv-color-success); }
+.jv-notice-error{ border-color:var(--jv-color-danger); }

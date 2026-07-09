@@ -1,0 +1,19 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : typography.css
+ * DESCRIPTION : Typographie générale.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+body{
+  font-family:var(--jv-font-family);
+  font-size:var(--jv-font-size-md);
+  color:var(--jv-color-text);
+  background:var(--jv-color-background);
+  line-height:1.6;
+}
+h1,h2,h3,h4,h5{line-height:1.15;color:var(--jv-color-white);}
+h2{font-size:clamp(34px,5vw,var(--jv-font-size-hero));}
+h3{font-size:28px;}
+p{color:var(--jv-color-muted);}
+small{font-weight:800;letter-spacing:2px;text-transform:uppercase;}

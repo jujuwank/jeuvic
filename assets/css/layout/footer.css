@@ -1,0 +1,8 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : footer.css
+ * DESCRIPTION : Pied de page.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-footer{padding:30px 8%;text-align:center;color:var(--jv-color-muted);border-top:1px solid var(--jv-color-border);}

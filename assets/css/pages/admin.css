@@ -1,0 +1,9 @@
+/***********************************************************************
+ * PROJET : JEUVIC
+ * FICHIER : admin.css
+ * DESCRIPTION : Styles spécifiques à l'espace arbitre.
+ * VERSION : 0.1.0
+ ***********************************************************************/
+
+.jv-info-line{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--jv-color-border);color:var(--jv-color-muted);}
+.jv-info-line strong{color:var(--jv-color-white);text-align:right;}
