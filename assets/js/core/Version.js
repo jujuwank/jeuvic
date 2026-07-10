@@ -7,7 +7,7 @@
 
 export const Version = Object.freeze({
   name: "JEUVIC",
-  version: "0.4.1",
-  codename: "Game Launcher",
+  version: "0.6.1",
+  codename: "Firebase Sync",
   releaseDate: "2026-07-09"
 });

@@ -1,16 +1,5 @@
-# JEUVIC V0.4.1 — Game Launcher
+# JEUVIC V0.8.1
 
-Cette version intègre **BibleQuizz V1.0.3** avec une première stabilisation de session.
+Cette version contient BIBLEQUIZZ V1.5.0 avec synchronisation Firebase, questions Google Sheets, correction atomique des scores et résultats de manche contrôlés par l'arbitre.
 
-## Nouveautés
-
-- Salle d’attente BibleQuizz après configuration
-- Affichage des joueurs inscrits
-- Bouton **COMMENCER** activé seulement lorsqu’au moins un joueur est inscrit
-- Écran d’attente côté joueur et projection
-- Correction du retour automatique vers la configuration
-- Reprise de session après rafraîchissement
-
-## Lancer BibleQuizz
-
-Ouvrir `index.html`, aller dans **Jeux**, puis cliquer sur **Lancer** sur la carte BibleQuizz.
+Déployez le contenu du dossier à la racine du dépôt GitHub Pages.

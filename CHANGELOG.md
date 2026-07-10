@@ -1,17 +1,13 @@
-# CHANGELOG — JEUVIC
+# JEUVIC V0.8.1
 
-## V0.4.1 — Stabilisation BibleQuizz
+## BIBLEQUIZZ V1.5.0
 
-### Corrigé
-- BibleQuizz ne retourne plus automatiquement à la page de configuration après un rafraîchissement ou une perte d’état temporaire.
-- Sauvegarde locale de la session active et reprise sans casser la partie.
-
-### Ajouté
-- Salle d’attente après configuration de la partie.
-- Liste des joueurs inscrits côté arbitre.
-- Bouton **COMMENCER** désactivé tant qu’aucun joueur n’est inscrit, puis activé automatiquement.
-- Écran d’attente côté joueur après inscription.
-- Écran d’attente côté projection avant le lancement de la partie.
-
-### Module intégré
-- BibleQuizz passe en V1.0.3.
+- Synchronisation en temps réel des réponses joueurs vers l'interface arbitre.
+- Comptabilisation atomique des points dans Firestore à partir des réponses les plus récentes.
+- Conservation visuelle du choix QCM pendant le décompte.
+- Révélation joueur : bonne réponse en vert, mauvais choix en rouge.
+- Réponse directe : champ vert si correct, rouge si incorrect, avec affichage de la bonne réponse.
+- Prise en charge du même comportement pour Vrai/Faux.
+- Classement privé visible uniquement par l'arbitre pendant la manche.
+- Classement public affiché uniquement après action de l'arbitre en fin de manche.
+- Nouvel état synchronisé `round_results`, puis bouton « Manche suivante ».

@@ -1,19 +1,28 @@
-# Structure Google Sheets prévue
+# Structure Google Sheets - BIBELQUIZZ V1.3.0
 
-Colonnes recommandées :
+Publie la feuille en CSV, puis colle le lien dans la configuration de la partie.
 
-| Colonne | Description |
-|---|---|
-| ID | Identifiant unique |
-| Catégorie | Ancien Testament, Nouveau Testament, etc. |
-| Type | direct ou qcm |
-| Difficulté | 1, 2 ou 3 |
-| Question | Texte de la question |
-| Choix A | Option A |
-| Choix B | Option B |
-| Choix C | Option C |
-| Choix D | Option D |
-| Bonne réponse | Réponse correcte |
-| Réponses acceptées | Synonymes séparés par `;` |
-| Verset | Référence biblique |
-| Explication | Explication facultative |
+## Colonnes recommandées
+
+| Question | Type | A | B | C | D | Réponse | Temps | Points | Actif | Catégorie |
+|---|---|---|---|---|---|---|---:|---:|---|---|
+| Qui a construit l'arche ? | QCM | Abraham | Noé | Moïse | David | B | 30 | 2 | Oui | Ancien Testament |
+| Qui a baptisé Jésus ? | Direct | | | | | Jean-Baptiste | 45 | 3 | Oui | Nouveau Testament |
+
+## Règles
+
+- `Question` et `Réponse` sont obligatoires.
+- `Réponse` peut contenir la lettre A/B/C/D ou le texte exact de la bonne réponse.
+- `Temps` définit la durée de cette question en secondes.
+- `Points` définit le nombre de points de cette question.
+- `Actif = Oui` garde la question. Si la colonne est vide, la question est aussi acceptée.
+- Les questions sont mélangées aléatoirement à chaque nouvelle partie.
+
+## Publication CSV
+
+Dans Google Sheets :
+
+1. Fichier → Partager → Publier sur le Web.
+2. Choisir la feuille des questions.
+3. Choisir le format CSV.
+4. Copier le lien et le coller dans BIBELQUIZZ.

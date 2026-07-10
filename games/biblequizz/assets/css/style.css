@@ -224,3 +224,121 @@ button:disabled.btn,
   margin-top:20px;
   font-size:clamp(20px,3vw,34px);
 }
+
+
+/*============================================================
+  BIBELQUIZZ V1.0.4 - Transition avant question
+============================================================*/
+#adminQuestionProgress,
+#playerQuestionProgress{
+  text-transform:uppercase;
+}
+#adminQuestion,
+#playerQuestion,
+#projectionQuestion{
+  transition:.25s ease;
+}
+#projectionTimer:empty{
+  display:none;
+}
+
+/*=========================================================
+  BIBELQUIZZ V1.1.0 - Interfaces séparées / partage
+=========================================================*/
+.back-link{
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 700;
+}
+.game-code-box{
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  border-radius: 18px;
+  padding: 18px;
+  margin: 18px 0;
+  display: grid;
+  gap: 6px;
+}
+.game-code-box strong{
+  font-size: clamp(32px, 7vw, 56px);
+  color: var(--gold);
+  letter-spacing: 8px;
+}
+.game-code-box.compact{
+  max-width: 260px;
+  text-align: center;
+  margin-inline: auto;
+}
+.game-code-box.compact strong{
+  font-size: 40px;
+}
+.share-grid{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+  margin: 18px 0;
+}
+.share-grid input{
+  width: 100%;
+  opacity: .95;
+}
+.btn.small{
+  padding: 8px 12px;
+  font-size: 13px;
+}
+@media(max-width: 760px){
+  .share-grid{ grid-template-columns: 1fr; }
+}
+
+/*=========================================================
+  BIBELQUIZZ V1.4.0 - Résultats et classement final
+=========================================================*/
+.final-ranking{
+  display:grid;
+  gap:10px;
+  margin:22px 0;
+}
+.rank-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:14px 18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:rgba(255,255,255,.07);
+}
+.rank-row:first-child{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(244,197,66,.12);
+}
+.rank-row strong{ color:var(--gold); }
+
+
+/*============================================================
+  BIBELQUIZZ V1.5.0 - Révélation et sélection des réponses
+============================================================*/
+.choice.wrong-choice{
+  border-color:var(--red)!important;
+  background:rgba(255,77,94,.22)!important;
+  color:#fff!important;
+  box-shadow:0 0 0 3px rgba(255,77,94,.18)!important;
+}
+.choice.correct-choice{
+  border-color:var(--green)!important;
+  background:rgba(22,199,132,.24)!important;
+  color:#fff!important;
+}
+.choice.correct-choice .choice-letter{color:#7cffb2!important}
+#playerAnswer.answer-correct{
+  border-color:var(--green);
+  background:rgba(22,199,132,.20);
+  box-shadow:0 0 0 3px rgba(22,199,132,.15);
+}
+#playerAnswer.answer-wrong{
+  border-color:var(--red);
+  background:rgba(255,77,94,.18);
+  box-shadow:0 0 0 3px rgba(255,77,94,.14);
+}
+.final-ranking h3{margin:20px 0 10px;color:var(--gold)}
