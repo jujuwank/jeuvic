@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.0 - Interfaces séparées + Firebase + Google Sheets
+ * BIBELQUIZZ V1.5.1 - Interfaces séparées + Firebase + Google Sheets
  *
  * Parcours principal :
  * - JEUVIC ouvre BIBELQUIZZ sur l'accueil du jeu.

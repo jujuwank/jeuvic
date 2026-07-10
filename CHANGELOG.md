@@ -1,3 +1,11 @@
+# JEUVIC V0.8.2
+
+- Correction du stockage Firestore des réponses (objet au lieu de tableaux imbriqués non supportés).
+- Réponses visibles en temps réel dans l’interface arbitre.
+- Comptabilisation des points réparée.
+- Sélection QCM conservée pendant la synchronisation réseau.
+- Compatibilité avec les anciennes parties enregistrées.
+
 # JEUVIC V0.8.1
 
 ## BIBLEQUIZZ V1.5.0

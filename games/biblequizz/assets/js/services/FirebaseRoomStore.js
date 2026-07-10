@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.0 - FirebaseRoomStore / Firestore
+ * BIBELQUIZZ V1.5.1 - FirebaseRoomStore / Firestore
  *
  * Les écritures sensibles utilisent des transactions afin d'éviter
  * qu'un téléphone joueur écrase l'état envoyé par l'arbitre.
@@ -120,9 +120,13 @@ export class FirebaseRoomStore {
         }
         mergedPlayers.push(...incomingPlayers.values());
 
+        const toAnswerObject = value => {
+          if(Array.isArray(value)) return Object.fromEntries(value);
+          return value && typeof value === "object" ? value : {};
+        };
         const answers = changedQuestion
-          ? (room.answers || [])
-          : [...new Map([...(latest.answers || []), ...(room.answers || [])]).entries()];
+          ? toAnswerObject(room.answers)
+          : { ...toAnswerObject(latest.answers), ...toAnswerObject(room.answers) };
 
         payload = { ...payload, players:mergedPlayers, answers };
       }
@@ -169,11 +173,13 @@ export class FirebaseRoomStore {
       const players = (room.players || []).map(player =>
         player.id === playerId ? { ...player, currentAnswer:answer } : player
       );
-      const answersMap = new Map(Array.isArray(room.answers) ? room.answers : []);
-      answersMap.set(playerId, answer);
+      const answers = Array.isArray(room.answers)
+        ? Object.fromEntries(room.answers)
+        : { ...(room.answers || {}) };
+      answers[playerId] = answer;
       transaction.update(ref, {
         players,
-        answers:[...answersMap.entries()],
+        answers,
         updatedAt:Date.now()
       });
       return true;
@@ -195,7 +201,9 @@ export class FirebaseRoomStore {
       const scoredKeys = Array.isArray(room.scoredQuestionKeys) ? room.scoredQuestionKeys : [];
       if(scoredKeys.includes(questionKey)) return room;
 
-      const answerMap = new Map(Array.isArray(room.answers) ? room.answers : []);
+      const answerMap = Array.isArray(room.answers)
+        ? new Map(room.answers)
+        : new Map(Object.entries(room.answers || {}));
       const players = (room.players || []).map(player => {
         const answer = answerMap.get(player.id) || player.currentAnswer || "";
         const correct = this.isCorrectAnswer(answer, question);

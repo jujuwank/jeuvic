@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.0 - Moteur principal synchronisé
+ * BIBELQUIZZ V1.5.1 - Moteur principal synchronisé
  *
  * Firebase est la source de vérité commune aux interfaces arbitre,
  * joueur et projection. localStorage reste disponible comme secours.
@@ -28,6 +28,8 @@ export class BibelQuizzEngine {
     this.status = "setup";
     this.transitionTimer = null;
     this.answers = new Map();
+    // Réponses locales en attente de confirmation Firebase.
+    this.pendingAnswers = new Map();
     this.corrected = false;
     this.scoredQuestionKeys = [];
     this.questionStore = new GoogleSheetsQuestionStore();
@@ -73,7 +75,9 @@ export class BibelQuizzEngine {
       config: this.config,
       remainingTime: this.remainingTime,
       status: this.status,
-      answers: [...this.answers.entries()],
+      // Firestore ne supporte pas les tableaux imbriqués ([[id, réponse]]).
+      // Les réponses sont donc enregistrées sous forme d’objet.
+      answers: Object.fromEntries(this.answers),
       corrected: this.corrected,
       scoredQuestionKeys: this.scoredQuestionKeys,
       updatedAt: Date.now()
@@ -304,20 +308,39 @@ export class BibelQuizzEngine {
     if(this.status !== "running") return false;
     const player = this.players.find(p => p.id === playerId);
     if(!player) return false;
+
     const normalizedAnswer = String(answer || "").trim();
-    if(this.cloudEnabled && this.store?.submitAnswer){
-      const saved = await this.store.submitAnswer(this.activeCode, playerId, normalizedAnswer);
-      if(!saved) return false;
-      player.currentAnswer = normalizedAnswer;
-      this.answers.set(playerId, normalizedAnswer);
-      // Mise à jour immédiate de l'interface locale, sans attendre le snapshot Firebase.
-      this.events.emit("game:updated", this.getState());
-      return true;
-    }
+    const previousAnswer = this.answers.get(playerId) || player.currentAnswer || "";
+    const questionKey = this.getCurrentQuestionKey();
+
+    // Mise à jour optimiste : le choix reste immédiatement en surbrillance,
+    // même pendant l'aller-retour réseau vers Firebase.
     player.currentAnswer = normalizedAnswer;
     this.answers.set(playerId, normalizedAnswer);
-    await this.saveRoom();
+    this.pendingAnswers.set(playerId, { questionKey, answer:normalizedAnswer });
     this.events.emit("game:updated", this.getState());
+
+    if(this.cloudEnabled && this.store?.submitAnswer){
+      try{
+        const saved = await this.store.submitAnswer(this.activeCode, playerId, normalizedAnswer);
+        if(!saved) throw new Error("Réponse non enregistrée");
+        return true;
+      }catch(error){
+        // Restauration uniquement si aucune autre réponse plus récente n'a été saisie.
+        const pending = this.pendingAnswers.get(playerId);
+        if(pending?.questionKey === questionKey && pending.answer === normalizedAnswer){
+          player.currentAnswer = previousAnswer;
+          previousAnswer ? this.answers.set(playerId, previousAnswer) : this.answers.delete(playerId);
+          this.pendingAnswers.delete(playerId);
+          this.events.emit("game:updated", this.getState());
+        }
+        console.error("[BIBELQUIZZ] Enregistrement de la réponse impossible", error);
+        return false;
+      }
+    }
+
+    await this.saveRoom();
+    this.pendingAnswers.delete(playerId);
     return true;
   }
 
@@ -391,6 +414,7 @@ export class BibelQuizzEngine {
     this.currentQuestionIndex += 1;
     this.round = Math.floor(this.currentQuestionIndex / Number(this.config.questionsPerRound || 1)) + 1;
     this.answers.clear();
+    this.pendingAnswers.clear();
     this.players.forEach(player => {
       player.currentAnswer = "";
       delete player.lastPoints;
@@ -493,7 +517,29 @@ export class BibelQuizzEngine {
     this.config = { ...this.defaultConfig(), ...(data.config || {}) };
     this.remainingTime = Number(data.remainingTime ?? this.getCurrentQuestionTime());
     this.status = data.status || "lobby";
-    this.answers = new Map(Array.isArray(data.answers) ? data.answers : []);
+
+    // Compatibilité avec les anciennes parties (tableau de paires) et le
+    // nouveau format Firestore (objet playerId -> réponse).
+    const remoteAnswers = Array.isArray(data.answers)
+      ? new Map(data.answers)
+      : new Map(Object.entries(data.answers || {}));
+
+    // Une réponse optimiste locale est conservée jusqu'à ce que Firebase la
+    // confirme. Cela empêche les snapshots du chronomètre d'effacer la sélection.
+    for(const [playerId, pending] of this.pendingAnswers){
+      if(pending.questionKey !== this.getCurrentQuestionKey()){
+        this.pendingAnswers.delete(playerId);
+        continue;
+      }
+      if(remoteAnswers.get(playerId) === pending.answer){
+        this.pendingAnswers.delete(playerId);
+      }else{
+        remoteAnswers.set(playerId, pending.answer);
+        const player = this.players.find(item => item.id === playerId);
+        if(player) player.currentAnswer = pending.answer;
+      }
+    }
+    this.answers = remoteAnswers;
     this.corrected = Boolean(data.corrected);
     this.scoredQuestionKeys = Array.isArray(data.scoredQuestionKeys) ? data.scoredQuestionKeys : [];
   }
@@ -509,6 +555,7 @@ export class BibelQuizzEngine {
     this.remainingTime = 45;
     this.status = "setup";
     this.answers = new Map();
+    this.pendingAnswers = new Map();
     this.corrected = false;
     this.scoredQuestionKeys = [];
     this.actionPending = false;

@@ -1,3 +1,10 @@
+# BIBLEQUIZZ V1.5.1
+
+- Réparation de l’enregistrement Firebase des réponses.
+- Mise à jour optimiste des réponses joueur.
+- Scores calculés à partir des réponses confirmées dans Firestore.
+- Réponses arbitre synchronisées en temps réel.
+
 # BIBLEQUIZZ V1.5.0
 
 ## Corrections
