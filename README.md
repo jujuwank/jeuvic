@@ -1,5 +1,5 @@
-# JEUVIC V0.8.2
+# JEUVIC V0.8.5
 
-Cette version contient BIBLEQUIZZ V1.5.1 avec synchronisation Firebase, questions Google Sheets, correction atomique des scores et résultats de manche contrôlés par l'arbitre.
+Plateforme JEUVIC avec BIBLEQUIZZ V1.6.0, Firebase/Firestore et Google Sheets.
 
-Déployez le contenu du dossier à la racine du dépôt GitHub Pages.
+Cette version introduit un chronomètre distribué basé sur un timestamp commun afin d’assurer un affichage fluide et synchronisé sur l’arbitre, les joueurs et la projection, y compris avec au moins 15 participants.

@@ -17,7 +17,7 @@ export const GAME_CODE_PATTERN = /^(?=.*\d)[A-Z0-9]{4}$/;
 
 export const Config = {
   appName: "JEUVIC / BIBELQUIZZ",
-  version: "1.5.3",
+  version: "1.6.0",
 
   // Alias conservés pour lire la configuration depuis l'objet Config si besoin.
   transitionDuration: TRANSITION_DURATION,

@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.2 - Interfaces séparées + Firebase + Google Sheets
+ * BIBELQUIZZ V1.6.0 - Interfaces séparées + Firebase + Google Sheets
  *
  * Parcours principal :
  * - JEUVIC ouvre BIBELQUIZZ sur l'accueil du jeu.
@@ -22,6 +22,8 @@ const engine = new BibelQuizzEngine(events, roomStore);
 let currentRole = "home";
 let currentPlayer = null;
 let lastRenderedPlayerQuestionKey = null;
+let latestState = null;
+let clockLockPending = false;
 
 /*=========================================================
   OUTILS D'AFFICHAGE
@@ -234,6 +236,9 @@ setInterval(() => {
   RENDU GLOBAL
 =========================================================*/
 function render(state){
+  latestState = state;
+  if(currentRole === "admin" && state.status === "transition") engine.scheduleTransitionEnd();
+  if(currentRole === "admin" && state.status === "running") engine.scheduleTimerEnd();
   if(currentRole === "admin") renderAdmin(state);
   if(currentRole === "player") renderPlayer(state);
   if(currentRole === "projection") renderProjection(state);
@@ -269,9 +274,26 @@ async function renderHome(){
   const list = $("#activeGamesList");
   if(!list) return;
   const rooms = await engine.getActiveRooms();
+  const statusLabels = {
+    lobby:"En attente", transition:"Transition", waiting:"Question prête",
+    running:"En cours", locked:"Réponse", round_results:"Résultats"
+  };
   list.innerHTML = rooms.length
-    ? rooms.map(room => `<div class="lobby-player"><span>${room.code}</span><div><strong>${room.status}</strong><br><small>${room.players?.length || 0} joueur(s)</small></div><div class="game-list-actions"><button class="btn secondary small" data-admin-code="${room.code}">Ouvrir</button><button class="btn danger small" data-delete-code="${room.code}">Supprimer</button></div></div>`).join("")
-    : `<div class="empty-lobby">Aucune partie en cours.</div>`;
+    ? rooms.map(room => `<article class="active-game-card">
+        <div class="active-game-main">
+          <div class="active-game-code"><small>CODE PARTIE</small><strong>${escapeHtml(room.code)}</strong></div>
+          <div class="active-game-details">
+            <span class="status-badge status-${escapeHtml(room.status)}">${statusLabels[room.status] || escapeHtml(room.status)}</span>
+            <p><b>${room.players?.length || 0}</b> joueur(s) connecté(s)</p>
+            <small>${Number(room.config?.rounds || 1)} manche(s) · ${Number(room.config?.questionsPerRound || 0)} question(s)/manche</small>
+          </div>
+        </div>
+        <div class="game-list-actions">
+          <button class="btn primary small" data-admin-code="${escapeHtml(room.code)}">Ouvrir la partie</button>
+          <button class="btn danger ghost small" data-delete-code="${escapeHtml(room.code)}">Supprimer</button>
+        </div>
+      </article>`).join("")
+    : `<div class="empty-games-state"><div class="empty-games-icon">🎮</div><h3>Aucune partie en cours</h3><p>Crée une nouvelle salle pour commencer un BibleQuizz.</p></div>`;
   $$(`[data-admin-code]`).forEach(btn => btn.addEventListener("click", async () => {
     const code = btn.dataset.adminCode;
     if(await engine.loadGame(code)){
@@ -491,6 +513,38 @@ function renderProjection(state){
     ? state.ranking.map((p,i)=>`<div class="rank-row"><span>${i+1}. ${escapeHtml(p.name)}</span><strong>${p.score} pts</strong></div>`).join("") : "";
 }
 
+/*=========================================================
+  HORLOGE LOCALE SYNCHRONISÉE PAR TIMESTAMP
+=========================================================*/
+function calculateRemainingSeconds(state, now = Date.now()){
+  if(!state) return 0;
+  if(state.status === "running" && state.timerStartedAt){
+    const deadline = Number(state.timerStartedAt) + Number(state.timerDurationMs || 0);
+    return Math.max(0, Math.ceil((deadline - now) / 1000));
+  }
+  return Math.max(0, Number(state.remainingTime || 0));
+}
+
+function updateClockDisplays(){
+  const state = latestState;
+  if(state){
+    const seconds = calculateRemainingSeconds(state);
+    const text = formatTime(seconds);
+    if(currentRole === "admin" && $("#adminTimer")) $("#adminTimer").textContent = text;
+    if(currentRole === "player" && $("#playerTimer")) $("#playerTimer").textContent = text;
+    if(currentRole === "projection" && $("#projectionTimer")) $("#projectionTimer").textContent = text;
+    const projectionTime = $("#projectionInfoPanel b:last-child");
+    if(currentRole === "projection" && projectionTime) projectionTime.textContent = text;
+
+    // Seul l'arbitre verrouille officiellement la question à l'échéance.
+    if(currentRole === "admin" && state.status === "running" && seconds <= 0 && !clockLockPending){
+      clockLockPending = true;
+      engine.stopTimer().finally(() => { clockLockPending = false; });
+    }
+  }
+  window.setTimeout(updateClockDisplays, 100);
+}
+
 function showPublicAnswer(selector, answer){ const box = $(selector); if(!box) return; box.classList.remove("hidden"); box.innerHTML = `<span>Bonne réponse</span><strong>${escapeHtml(answer)}</strong>`; }
 function hidePublicAnswer(selector){ const box = $(selector); if(!box) return; box.classList.add("hidden"); box.innerHTML = ""; }
 
@@ -510,7 +564,8 @@ async function startApplication(){
   await engine.init();
   initActions();
   await initFromUrl();
-  console.log("[BIBELQUIZZ 1.5.2] Firebase + Google Sheets démarrés");
+  updateClockDisplays();
+  console.log("[BIBELQUIZZ 1.6.0] Firebase + Google Sheets démarrés");
 }
 
 startApplication();

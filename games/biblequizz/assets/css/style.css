@@ -345,3 +345,166 @@ button:disabled.btn,
 
 /* Actions disponibles pour chaque partie dans la liste d’accueil. */
 .game-list-actions{display:flex;gap:.55rem;flex-wrap:wrap;justify-content:flex-end}
+
+/*=========================================================
+  ACCUEIL BIBLEQUIZZ — CARTES DE PARTIES
+=========================================================*/
+#homeScreen .setup-panel{
+  max-width: 980px;
+  padding: 42px;
+  background:
+    radial-gradient(circle at top right, rgba(111, 91, 255, .16), transparent 34%),
+    linear-gradient(145deg, rgba(20, 25, 49, .98), rgba(12, 16, 34, .98));
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 28px 70px rgba(0,0,0,.36);
+}
+
+#homeScreen h1{
+  margin-bottom: 10px;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+#homeScreen .actions{
+  justify-content: flex-start;
+  margin: 28px 0 38px;
+}
+
+#homeScreen #newGameBtn{
+  min-width: 230px;
+  padding: 15px 24px;
+  font-size: 1rem;
+  box-shadow: 0 14px 34px rgba(91, 77, 255, .28);
+}
+
+#activeGamesList{
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.active-game-card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 14px 30px rgba(0,0,0,.16);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.active-game-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(142, 130, 255, .45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 38px rgba(0,0,0,.22);
+}
+
+.active-game-main{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.active-game-code{
+  min-width: 132px;
+  padding: 14px 16px;
+  text-align: center;
+  border-radius: 16px;
+  background: rgba(111, 91, 255, .15);
+  border: 1px solid rgba(142, 130, 255, .32);
+}
+
+.active-game-code small{
+  display: block;
+  margin-bottom: 5px;
+  font-size: .67rem;
+  letter-spacing: .13em;
+  color: rgba(255,255,255,.56);
+}
+
+.active-game-code strong{
+  font-size: 1.55rem;
+  letter-spacing: .16em;
+}
+
+.active-game-details p{
+  margin: 8px 0 3px;
+}
+
+.active-game-details small{
+  color: rgba(255,255,255,.58);
+}
+
+.status-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.8);
+}
+
+.status-badge::before{
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa3b8;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.status-lobby::before{ background:#52d69a; }
+.status-running::before{ background:#ffd166; }
+.status-locked::before,
+.status-round_results::before{ background:#ff7f8d; }
+.status-transition::before,
+.status-waiting::before{ background:#8e82ff; }
+
+.game-list-actions{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn.ghost{
+  background: transparent;
+  border: 1px solid rgba(255, 98, 113, .5);
+  color: #ff9aa4;
+  box-shadow: none;
+}
+
+.btn.ghost:hover{
+  background: rgba(255, 76, 95, .12);
+}
+
+.empty-games-state{
+  padding: 42px 20px;
+  text-align: center;
+  border-radius: 20px;
+  border: 1px dashed rgba(255,255,255,.16);
+  background: rgba(255,255,255,.025);
+}
+
+.empty-games-icon{
+  margin-bottom: 10px;
+  font-size: 2.4rem;
+}
+
+.empty-games-state h3{ margin: 0 0 7px; }
+.empty-games-state p{ margin: 0; color: rgba(255,255,255,.58); }
+
+@media (max-width: 760px){
+  #homeScreen .setup-panel{ padding: 26px 18px; }
+  .active-game-card{ align-items: stretch; flex-direction: column; }
+  .active-game-main{ align-items: flex-start; }
+  .active-game-code{ min-width: 108px; }
+  .game-list-actions{ justify-content: stretch; }
+  .game-list-actions .btn{ flex: 1 1 150px; }
+}

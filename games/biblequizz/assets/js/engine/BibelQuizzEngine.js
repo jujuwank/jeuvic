@@ -25,6 +25,10 @@ export class BibelQuizzEngine {
     this.config = this.defaultConfig();
     this.timer = null;
     this.remainingTime = DEFAULT_QUESTION_TIME;
+    this.timerStartedAt = null;
+    this.timerDurationMs = DEFAULT_QUESTION_TIME * 1000;
+    this.transitionStartedAt = null;
+    this.transitionDurationMs = TRANSITION_DURATION;
     this.status = "setup";
     this.transitionTimer = null;
     this.answers = new Map();
@@ -73,7 +77,11 @@ export class BibelQuizzEngine {
       currentQuestionIndex: this.currentQuestionIndex,
       round: this.round,
       config: this.config,
-      remainingTime: this.remainingTime,
+      remainingTime: this.getRemainingTime(),
+      timerStartedAt: this.timerStartedAt,
+      timerDurationMs: this.timerDurationMs,
+      transitionStartedAt: this.transitionStartedAt,
+      transitionDurationMs: this.transitionDurationMs,
       status: this.status,
       // Firestore ne supporte pas les tableaux imbriqués ([[id, réponse]]).
       // Les réponses sont donc enregistrées sous forme d’objet.
@@ -124,6 +132,10 @@ export class BibelQuizzEngine {
     this.corrected = false;
     this.scoredQuestionKeys = [];
     this.remainingTime = this.getCurrentQuestionTime();
+    this.timerStartedAt = null;
+    this.timerDurationMs = this.remainingTime * 1000;
+    this.transitionStartedAt = null;
+    this.transitionDurationMs = TRANSITION_DURATION;
     this.status = "lobby";
     await this.saveRoom();
     this.subscribeToRoom(this.activeCode);
@@ -248,6 +260,24 @@ export class BibelQuizzEngine {
     return Number.isFinite(value) && value > 0 ? value : Number(this.config.time || 45);
   }
 
+  /*---------------------------------------------------------
+    Chronomètre basé sur une échéance absolue. Chaque appareil
+    calcule localement le temps restant à partir du même instant.
+  ---------------------------------------------------------*/
+  getRemainingTime(now = Date.now()){
+    if(this.status === "running" && this.timerStartedAt){
+      const deadline = Number(this.timerStartedAt) + Number(this.timerDurationMs || 0);
+      return Math.max(0, Math.ceil((deadline - now) / 1000));
+    }
+    return Math.max(0, Number(this.remainingTime || 0));
+  }
+
+  getTransitionRemainingMs(now = Date.now()){
+    if(this.status !== "transition" || !this.transitionStartedAt) return 0;
+    const deadline = Number(this.transitionStartedAt) + Number(this.transitionDurationMs || TRANSITION_DURATION);
+    return Math.max(0, deadline - now);
+  }
+
   getCurrentQuestionKey(){ return `${this.round}-${this.currentQuestionIndex}`; }
 
   shuffleQuestions(questions){
@@ -289,6 +319,10 @@ export class BibelQuizzEngine {
       if(this.status !== "lobby" || this.players.length <= 0) return;
       this.status = "transition";
       this.remainingTime = this.getCurrentQuestionTime();
+      this.timerStartedAt = null;
+      this.timerDurationMs = this.remainingTime * 1000;
+      this.transitionStartedAt = Date.now();
+      this.transitionDurationMs = TRANSITION_DURATION;
       await this.saveRoom();
       this.events.emit("game:updated", this.getState());
       this.scheduleTransitionEnd();
@@ -297,36 +331,46 @@ export class BibelQuizzEngine {
 
   scheduleTransitionEnd(){
     clearTimeout(this.transitionTimer);
+    const delay = Math.max(0, this.getTransitionRemainingMs());
     this.transitionTimer = setTimeout(async () => {
       if(this.status !== "transition") return;
       this.status = "waiting";
+      this.transitionStartedAt = null;
       this.remainingTime = this.getCurrentQuestionTime();
+      this.timerDurationMs = this.remainingTime * 1000;
       await this.saveRoom();
       this.events.emit("game:updated", this.getState());
-    }, TRANSITION_DURATION);
+    }, delay);
   }
 
   async startTimer(){
     return this.runAction(async () => {
       if(this.status !== "waiting" || this.corrected || this.players.length <= 0) return;
+      const seconds = this.getCurrentQuestionTime();
       this.status = "running";
-      this.remainingTime = this.getCurrentQuestionTime();
+      this.remainingTime = seconds;
+      this.timerStartedAt = Date.now();
+      this.timerDurationMs = seconds * 1000;
       await this.saveRoom();
-      clearInterval(this.timer);
-      this.timer = setInterval(async () => {
-        this.remainingTime = Math.max(0, this.remainingTime - 1);
-        await this.saveRoom();
-        this.events.emit("timer:tick", this.getState());
-        if(this.remainingTime <= 0) await this.stopTimer();
-      }, 1000);
+      this.scheduleTimerEnd();
       this.events.emit("game:updated", this.getState());
     });
   }
 
+  scheduleTimerEnd(){
+    clearTimeout(this.timer);
+    if(this.status !== "running" || !this.timerStartedAt) return;
+    const deadline = Number(this.timerStartedAt) + Number(this.timerDurationMs || 0);
+    const delay = Math.max(0, deadline - Date.now());
+    this.timer = setTimeout(() => this.stopTimer(), delay + 30);
+  }
+
   async stopTimer(){
-    clearInterval(this.timer);
+    clearTimeout(this.timer);
     this.timer = null;
-    if(this.status === "finished") return;
+    if(this.status !== "running") return;
+    this.remainingTime = 0;
+    this.timerStartedAt = null;
     this.status = "locked";
     await this.saveRoom();
     this.events.emit("game:updated", this.getState());
@@ -375,7 +419,7 @@ export class BibelQuizzEngine {
   async correctQuestion(){
     return this.runAction(async () => {
       if(this.corrected || this.status === "finished" || this.status === "round_results") return;
-      clearInterval(this.timer);
+      clearTimeout(this.timer);
       this.timer = null;
 
       // En mode Firebase, le calcul se fait dans une transaction à partir
@@ -414,7 +458,7 @@ export class BibelQuizzEngine {
   async skipQuestion(){
     return this.runAction(async () => {
       if(["setup", "lobby", "transition", "finished"].includes(this.status)) return;
-      clearInterval(this.timer);
+      clearTimeout(this.timer);
       clearTimeout(this.transitionTimer);
       this.timer = null;
       this.players.forEach(player => { player.lastPoints = 0; });
@@ -434,7 +478,7 @@ export class BibelQuizzEngine {
   }
 
   async moveToNextQuestion(shouldScore){
-    clearInterval(this.timer);
+    clearTimeout(this.timer);
     clearTimeout(this.transitionTimer);
     this.timer = null;
     if(shouldScore) this.scoreCurrentQuestion();
@@ -455,6 +499,10 @@ export class BibelQuizzEngine {
     }
 
     this.remainingTime = this.getCurrentQuestionTime();
+    this.timerStartedAt = null;
+    this.timerDurationMs = this.remainingTime * 1000;
+    this.transitionStartedAt = Date.now();
+    this.transitionDurationMs = TRANSITION_DURATION;
     this.status = "transition";
     await this.saveRoom();
     this.events.emit("game:updated", this.getState());
@@ -475,17 +523,29 @@ export class BibelQuizzEngine {
   }
 
   async finishGameInternal(){
-    clearInterval(this.timer);
+    clearTimeout(this.timer);
     clearTimeout(this.transitionTimer);
     this.timer = null;
 
-    // La question courante est comptabilisée une seule fois si elle a été révélée
-    // ou si l'arbitre termine explicitement la partie pendant/après la question.
+    // La question courante est comptabilisée une seule fois. En mode cloud,
+    // les réponses sont relues depuis Firestore avant le calcul final.
     if(!this.scoredQuestionKeys.includes(this.getCurrentQuestionKey())){
-      this.scoreCurrentQuestion();
+      if(this.cloudEnabled && this.store?.scoreQuestion){
+        const room = await this.store.scoreQuestion(
+          this.activeCode,
+          this.getCurrentQuestionKey(),
+          this.currentQuestion
+        );
+        if(room) this.applyRoom(room);
+      }else{
+        this.scoreCurrentQuestion();
+      }
     }
 
     this.corrected = true;
+    this.timerStartedAt = null;
+    this.transitionStartedAt = null;
+    this.remainingTime = 0;
     this.status = "finished";
     await this.saveRoom();
     this.events.emit("game:updated", this.getState());
@@ -505,7 +565,11 @@ export class BibelQuizzEngine {
       questionNumber: this.currentQuestionIndex + 1,
       currentQuestionIndex: this.currentQuestionIndex,
       round: this.round,
-      remainingTime: this.remainingTime,
+      remainingTime: this.getRemainingTime(),
+      timerStartedAt: this.timerStartedAt,
+      timerDurationMs: this.timerDurationMs,
+      transitionStartedAt: this.transitionStartedAt,
+      transitionDurationMs: this.transitionDurationMs,
       answers: this.answers,
       corrected: this.corrected,
       ranking: this.getRanking(),
@@ -544,6 +608,10 @@ export class BibelQuizzEngine {
     this.round = Number(data.round || 1);
     this.config = { ...this.defaultConfig(), ...(data.config || {}) };
     this.remainingTime = Number(data.remainingTime ?? this.getCurrentQuestionTime());
+    this.timerStartedAt = data.timerStartedAt ? Number(data.timerStartedAt) : null;
+    this.timerDurationMs = Number(data.timerDurationMs || this.remainingTime * 1000);
+    this.transitionStartedAt = data.transitionStartedAt ? Number(data.transitionStartedAt) : null;
+    this.transitionDurationMs = Number(data.transitionDurationMs || TRANSITION_DURATION);
     this.status = data.status || "lobby";
 
     // Compatibilité avec les anciennes parties (tableau de paires) et le
@@ -570,10 +638,11 @@ export class BibelQuizzEngine {
     this.answers = remoteAnswers;
     this.corrected = Boolean(data.corrected);
     this.scoredQuestionKeys = Array.isArray(data.scoredQuestionKeys) ? data.scoredQuestionKeys : [];
+
   }
 
   resetRuntime(){
-    clearInterval(this.timer);
+    clearTimeout(this.timer);
     clearTimeout(this.transitionTimer);
     this.players = [];
     this.questions = [...demoQuestions].sort(() => Math.random() - 0.5);
@@ -581,6 +650,10 @@ export class BibelQuizzEngine {
     this.round = 1;
     this.config = this.defaultConfig();
     this.remainingTime = DEFAULT_QUESTION_TIME;
+    this.timerStartedAt = null;
+    this.timerDurationMs = DEFAULT_QUESTION_TIME * 1000;
+    this.transitionStartedAt = null;
+    this.transitionDurationMs = TRANSITION_DURATION;
     this.status = "setup";
     this.answers = new Map();
     this.pendingAnswers = new Map();
