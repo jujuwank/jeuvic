@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.1 - Interfaces séparées + Firebase + Google Sheets
+ * BIBELQUIZZ V1.5.2 - Interfaces séparées + Firebase + Google Sheets
  *
  * Parcours principal :
  * - JEUVIC ouvre BIBELQUIZZ sur l'accueil du jeu.
@@ -445,7 +445,15 @@ function renderPlayerQcmOptions(question, locked, state){
     const wrongClass = state.corrected && option === currentAnswer && option !== question.correctAnswer ? "wrong-choice" : "";
     return `<button class="choice ${selected} ${correctClass} ${wrongClass}" type="button" data-answer="${escapeHtml(option)}" ${locked ? "disabled" : ""}><span class="choice-letter">${letter}.</span><span class="choice-text">${escapeHtml(option)}</span></button>`;
   }).join("");
-  $$(".choice").forEach(choice => choice.addEventListener("click", () => { if(locked) return; $$(".choice").forEach(c => c.classList.remove("selected")); choice.classList.add("selected"); saveCurrentPlayerAnswer(choice.dataset.answer); $("#playerMessage").textContent = "Choix enregistré automatiquement."; }));
+  const playerChoices = document.querySelectorAll("#playerOptions .choice");
+  playerChoices.forEach(choice => choice.addEventListener("click", async () => {
+    if(locked) return;
+    playerChoices.forEach(c => c.classList.remove("selected"));
+    choice.classList.add("selected");
+    $("#playerMessage").textContent = "Enregistrement...";
+    const saved = await engine.submitAnswer(currentPlayer.id, choice.dataset.answer);
+    $("#playerMessage").textContent = saved ? "Choix enregistré." : "Échec de l’enregistrement. Réessaie.";
+  }));
 }
 
 /*=========================================================
@@ -493,7 +501,7 @@ async function startApplication(){
   await engine.init();
   initActions();
   await initFromUrl();
-  console.log("[BIBELQUIZZ 1.5.0] Firebase + Google Sheets démarrés");
+  console.log("[BIBELQUIZZ 1.5.2] Firebase + Google Sheets démarrés");
 }
 
 startApplication();

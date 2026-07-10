@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.1 - Moteur principal synchronisé
+ * BIBELQUIZZ V1.5.2 - Moteur principal synchronisé
  *
  * Firebase est la source de vérité commune aux interfaces arbitre,
  * joueur et projection. localStorage reste disponible comme secours.
@@ -322,7 +322,7 @@ export class BibelQuizzEngine {
 
     if(this.cloudEnabled && this.store?.submitAnswer){
       try{
-        const saved = await this.store.submitAnswer(this.activeCode, playerId, normalizedAnswer);
+        const saved = await this.store.submitAnswer(this.activeCode, playerId, normalizedAnswer, questionKey);
         if(!saved) throw new Error("Réponse non enregistrée");
         return true;
       }catch(error){

@@ -19,3 +19,10 @@
 - Classement privé visible uniquement par l'arbitre pendant la manche.
 - Classement public affiché uniquement après action de l'arbitre en fin de manche.
 - Nouvel état synchronisé `round_results`, puis bouton « Manche suivante ».
+
+## V0.8.3
+- Réponses Firestore déplacées dans une sous-collection indépendante.
+- Affichage temps réel des réponses dans l’interface arbitre stabilisé.
+- Surbrillance QCM conservée pendant tout le décompte.
+- Calcul des points basé sur les réponses réellement enregistrées.
+- Journaux de diagnostic ajoutés dans la console navigateur.

@@ -1,10 +1,16 @@
 /***********************************************************************
- * BIBELQUIZZ V1.5.1 - FirebaseRoomStore / Firestore
+ * BIBELQUIZZ V1.5.2 - FirebaseRoomStore / Firestore
  *
- * Les écritures sensibles utilisent des transactions afin d'éviter
- * qu'un téléphone joueur écrase l'état envoyé par l'arbitre.
+ * Architecture stabilisée :
+ * - l'état général de la partie reste dans bibelquizz_rooms/{code}
+ * - chaque réponse joueur est enregistrée séparément dans la sous-
+ *   collection answers/{playerId}
+ *
+ * Cette séparation empêche les écritures du chronomètre/arbitre
+ * d'écraser les réponses envoyées par les téléphones des joueurs.
  ***********************************************************************/
 import { Config } from "../core/Config.js";
+import { AnswerChecker } from "../engine/AnswerChecker.js";
 
 let firebaseAppModule = null;
 let firebaseFirestoreModule = null;
@@ -15,7 +21,8 @@ export class FirebaseRoomStore {
     this.enabled = Boolean(Config.firebase?.enabled);
     this.ready = false;
     this.db = null;
-    this.unsubscribeRoom = null;
+    this.unsubscribeRoomState = null;
+    this.unsubscribeAnswersState = null;
     this.collectionPath = Config.firebase?.collectionPath || "bibelquizz_rooms";
   }
 
@@ -57,12 +64,10 @@ export class FirebaseRoomStore {
   }
 
   normalizeCode(code){ return String(code || "").trim().toUpperCase(); }
-
-  roomDoc(code){
-    return firebaseFirestoreModule.doc(this.db, this.collectionPath, this.normalizeCode(code));
-  }
-
+  roomDoc(code){ return firebaseFirestoreModule.doc(this.db, this.collectionPath, this.normalizeCode(code)); }
   roomsCollection(){ return firebaseFirestoreModule.collection(this.db, this.collectionPath); }
+  answersCollection(code){ return firebaseFirestoreModule.collection(this.roomDoc(code), "answers"); }
+  answerDoc(code, playerId){ return firebaseFirestoreModule.doc(this.answersCollection(code), playerId); }
 
   async getRoom(code){
     if(!this.ready) return null;
@@ -82,8 +87,8 @@ export class FirebaseRoomStore {
   }
 
   /*---------------------------------------------------------
-    Sauvegarde arbitre : fusionne les joueurs présents dans la
-    dernière version Firestore pour éviter les pertes d'inscription.
+    Sauvegarde de l'état arbitre. Les réponses ne sont jamais
+    réécrites ici : elles vivent dans la sous-collection answers.
   ---------------------------------------------------------*/
   async saveRoom(room){
     if(!this.ready || !room?.code) return;
@@ -92,7 +97,12 @@ export class FirebaseRoomStore {
     await firebaseFirestoreModule.runTransaction(this.db, async transaction => {
       const snapshot = await transaction.get(ref);
       const latest = snapshot.exists() ? snapshot.data() : null;
-      let payload = { ...room, code:this.normalizeCode(room.code), updatedAt:Date.now() };
+      const { answers: _ignoredAnswers, ...roomWithoutAnswers } = room;
+      let payload = {
+        ...roomWithoutAnswers,
+        code:this.normalizeCode(room.code),
+        updatedAt:Date.now()
+      };
 
       if(latest){
         const latestPlayers = new Map((latest.players || []).map(player => [player.id, player]));
@@ -106,12 +116,9 @@ export class FirebaseRoomStore {
             mergedPlayers.push({
               ...oldPlayer,
               ...incoming,
-              // Pendant une même question, une réponse déjà enregistrée ne
-              // doit pas être effacée par une copie arbitre arrivée plus tard.
-              // Lors du changement de question, l'effacement est volontaire.
               currentAnswer: changedQuestion
-                ? (incoming.currentAnswer || "")
-                : (incoming.currentAnswer || oldPlayer.currentAnswer || "")
+                ? ""
+                : (oldPlayer.currentAnswer || incoming.currentAnswer || "")
             });
             incomingPlayers.delete(id);
           }else{
@@ -119,26 +126,13 @@ export class FirebaseRoomStore {
           }
         }
         mergedPlayers.push(...incomingPlayers.values());
-
-        const toAnswerObject = value => {
-          if(Array.isArray(value)) return Object.fromEntries(value);
-          return value && typeof value === "object" ? value : {};
-        };
-        const answers = changedQuestion
-          ? toAnswerObject(room.answers)
-          : { ...toAnswerObject(latest.answers), ...toAnswerObject(room.answers) };
-
-        payload = { ...payload, players:mergedPlayers, answers };
+        payload.players = mergedPlayers;
       }
 
       transaction.set(ref, payload, { merge:true });
     });
   }
 
-  /*---------------------------------------------------------
-    Inscription atomique d'un joueur. Elle vérifie à nouveau que
-    la partie est toujours dans le lobby au moment de l'écriture.
-  ---------------------------------------------------------*/
   async addPlayer(code, player, maxPlayers){
     if(!this.ready) return { ok:false, reason:"NOT_READY" };
     const ref = this.roomDoc(code);
@@ -159,40 +153,50 @@ export class FirebaseRoomStore {
   }
 
   /*---------------------------------------------------------
-    Enregistre une réponse sans réécrire toute la partie.
+    Réponse joueur atomique et indépendante de l'état principal.
   ---------------------------------------------------------*/
-  async submitAnswer(code, playerId, answer){
+  async submitAnswer(code, playerId, answer, questionKey){
     if(!this.ready) return false;
-    const ref = this.roomDoc(code);
+    const roomRef = this.roomDoc(code);
+    const answerRef = this.answerDoc(code, playerId);
 
     return firebaseFirestoreModule.runTransaction(this.db, async transaction => {
-      const snapshot = await transaction.get(ref);
+      const snapshot = await transaction.get(roomRef);
       if(!snapshot.exists()) return false;
       const room = snapshot.data();
       if(room.status !== "running") return false;
-      const players = (room.players || []).map(player =>
-        player.id === playerId ? { ...player, currentAnswer:answer } : player
-      );
-      const answers = Array.isArray(room.answers)
-        ? Object.fromEntries(room.answers)
-        : { ...(room.answers || {}) };
-      answers[playerId] = answer;
-      transaction.update(ref, {
-        players,
-        answers,
-        updatedAt:Date.now()
-      });
+
+      const activeQuestionKey = `${Number(room.round || 1)}-${Number(room.currentQuestionIndex || 0)}`;
+      if(activeQuestionKey !== questionKey) return false;
+
+      transaction.set(answerRef, {
+        playerId,
+        answer:String(answer || "").trim(),
+        questionKey,
+        submittedAt:Date.now()
+      }, { merge:true });
+
+      console.info(`[PLAYER→FIREBASE] ${playerId} = ${answer}`);
       return true;
     });
   }
 
   /*---------------------------------------------------------
-    Corrige et comptabilise une question dans une transaction.
-    Les réponses les plus récentes de Firestore sont utilisées.
+    Calcule les scores avec les réponses réellement présentes
+    dans la sous-collection pour la question courante.
   ---------------------------------------------------------*/
   async scoreQuestion(code, questionKey, question){
     if(!this.ready) return null;
     const ref = this.roomDoc(code);
+    const answerSnapshot = await firebaseFirestoreModule.getDocs(this.answersCollection(code));
+    const answerMap = new Map();
+
+    answerSnapshot.forEach(docSnapshot => {
+      const data = docSnapshot.data();
+      if(data.questionKey === questionKey){
+        answerMap.set(data.playerId || docSnapshot.id, String(data.answer || ""));
+      }
+    });
 
     return firebaseFirestoreModule.runTransaction(this.db, async transaction => {
       const snapshot = await transaction.get(ref);
@@ -201,14 +205,17 @@ export class FirebaseRoomStore {
       const scoredKeys = Array.isArray(room.scoredQuestionKeys) ? room.scoredQuestionKeys : [];
       if(scoredKeys.includes(questionKey)) return room;
 
-      const answerMap = Array.isArray(room.answers)
-        ? new Map(room.answers)
-        : new Map(Object.entries(room.answers || {}));
       const players = (room.players || []).map(player => {
-        const answer = answerMap.get(player.id) || player.currentAnswer || "";
-        const correct = this.isCorrectAnswer(answer, question);
+        const answer = answerMap.get(player.id) || "";
+        const correct = AnswerChecker.isCorrect(answer, question);
         const lastPoints = correct ? Number(question?.points || 0) : 0;
-        return { ...player, currentAnswer:answer, lastPoints, score:Number(player.score || 0) + lastPoints };
+        console.info(`[SCORE] ${player.name}: "${answer}" => ${correct ? `+${lastPoints}` : "0"}`);
+        return {
+          ...player,
+          currentAnswer:answer,
+          lastPoints,
+          score:Number(player.score || 0) + lastPoints
+        };
       });
 
       const payload = {
@@ -219,46 +226,78 @@ export class FirebaseRoomStore {
         updatedAt:Date.now()
       };
       transaction.update(ref, payload);
-      return { ...room, ...payload };
+      return { ...room, ...payload, answers:Object.fromEntries(answerMap) };
     });
-  }
-
-  normalizeAnswer(value){
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  isCorrectAnswer(answer, question){
-    const actual = this.normalizeAnswer(answer);
-    if(!actual) return false;
-    const candidates = [question?.correctAnswer, ...(question?.acceptedAnswers || [])];
-    return candidates.some(candidate => this.normalizeAnswer(candidate) === actual);
   }
 
   async deleteRoom(code){
     if(!this.ready) return;
+    const answers = await firebaseFirestoreModule.getDocs(this.answersCollection(code));
+    await Promise.all(answers.docs.map(docSnapshot => firebaseFirestoreModule.deleteDoc(docSnapshot.ref)));
     await firebaseFirestoreModule.deleteDoc(this.roomDoc(code));
   }
 
+  /*---------------------------------------------------------
+    Écoute simultanément l'état de la partie et les réponses.
+    Le callback reçoit toujours un état fusionné cohérent.
+  ---------------------------------------------------------*/
   subscribeRoom(code, callback){
     if(!this.ready) return () => {};
     this.unsubscribe();
-    this.unsubscribeRoom = firebaseFirestoreModule.onSnapshot(
+
+    let latestRoom = null;
+    let latestAnswers = new Map();
+
+    const publish = () => {
+      if(!latestRoom){
+        callback(null);
+        return;
+      }
+
+      const questionKey = `${Number(latestRoom.round || 1)}-${Number(latestRoom.currentQuestionIndex || 0)}`;
+      const currentAnswers = {};
+      for(const [playerId, data] of latestAnswers){
+        if(data.questionKey === questionKey) currentAnswers[playerId] = data.answer;
+      }
+
+      const players = (latestRoom.players || []).map(player => ({
+        ...player,
+        currentAnswer: currentAnswers[player.id] ?? player.currentAnswer ?? ""
+      }));
+
+      callback({ ...latestRoom, players, answers:currentAnswers });
+    };
+
+    this.unsubscribeRoomState = firebaseFirestoreModule.onSnapshot(
       this.roomDoc(code),
-      snapshot => callback(snapshot.exists() ? snapshot.data() : null),
+      snapshot => {
+        latestRoom = snapshot.exists() ? snapshot.data() : null;
+        publish();
+      },
       error => console.error("[Firebase] Erreur écoute partie", error)
     );
-    return this.unsubscribeRoom;
+
+    this.unsubscribeAnswersState = firebaseFirestoreModule.onSnapshot(
+      this.answersCollection(code),
+      snapshot => {
+        latestAnswers = new Map(snapshot.docs.map(docSnapshot => [docSnapshot.id, docSnapshot.data()]));
+        console.info(`[ARBITRE←FIREBASE] ${latestAnswers.size} réponse(s) reçue(s)`);
+        publish();
+      },
+      error => console.error("[Firebase] Erreur écoute réponses", error)
+    );
+
+    return () => this.unsubscribe();
   }
 
   unsubscribe(){
-    if(this.unsubscribeRoom){
-      this.unsubscribeRoom();
-      this.unsubscribeRoom = null;
+    if(this.unsubscribeRoomState){
+      this.unsubscribeRoomState();
+      this.unsubscribeRoomState = null;
+    }
+    if(this.unsubscribeAnswersState){
+      this.unsubscribeAnswersState();
+      this.unsubscribeAnswersState = null;
     }
   }
 }

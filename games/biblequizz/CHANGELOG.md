@@ -21,3 +21,7 @@
 - À la dernière question d'une manche, l'arbitre peut afficher les résultats.
 - Les joueurs et la projection ne voient le classement qu'après cette action.
 - L'arbitre peut ensuite lancer la manche suivante.
+
+## V1.5.2
+- Flux de réponses Firebase entièrement séparé de l’état du chronomètre.
+- Synchronisation arbitre/joueurs et score corrigés.
