@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.6.0 - Interfaces séparées + Firebase + Google Sheets
+ * BIBELQUIZZ V1.6.2 - Interfaces séparées + Firebase + Google Sheets
  *
  * Parcours principal :
  * - JEUVIC ouvre BIBELQUIZZ sur l'accueil du jeu.
@@ -186,17 +186,22 @@ function initActions(){
   $("#skipQuestionBtn")?.addEventListener("click", async () => engine.skipQuestion());
   $("#nextQuestionBtn")?.addEventListener("click", async () => { if(!engine.getState().corrected) await engine.correctQuestion(); await engine.nextQuestion(); });
 
-  // Affiche ou masque le classement privé de l'arbitre.
-  $("#toggleAdminRankingBtn")?.addEventListener("click", () => {
+  // Ouvre ou ferme le classement privé de l'arbitre.
+  const setAdminRankingVisibility = open => {
     const drawer = $("#adminRankingDrawer");
     const button = $("#toggleAdminRankingBtn");
     if(!drawer || !button) return;
-    const willOpen = !drawer.classList.contains("open");
-    drawer.classList.toggle("open", willOpen);
-    drawer.setAttribute("aria-hidden", String(!willOpen));
-    button.textContent = willOpen ? "MASQUER CLASS" : "AFFICH CLASSEMENT";
-    button.setAttribute("aria-expanded", String(willOpen));
+    drawer.classList.toggle("open", open);
+    drawer.setAttribute("aria-hidden", String(!open));
+    button.textContent = open ? "MASQUER CLASS" : "AFFICH CLASSEMENT";
+    button.setAttribute("aria-expanded", String(open));
+  };
+
+  $("#toggleAdminRankingBtn")?.addEventListener("click", () => {
+    const drawer = $("#adminRankingDrawer");
+    setAdminRankingVisibility(!drawer?.classList.contains("open"));
   });
+  $("#drawerHideRankingBtn")?.addEventListener("click", () => setAdminRankingVisibility(false));
 
   $("#nextRoundBtn")?.addEventListener("click", async () => engine.nextQuestion());
   $("#resultsBtn")?.addEventListener("click", async () => {
@@ -533,7 +538,8 @@ function renderProjection(state){
   $("#projectionInfoPanel").classList.toggle("hidden", showWaiting);
   $("#projectionWaitingCount").textContent = String(state.players.length);
   if(showWaiting){ $("#projectionRanking").innerHTML = ""; return; }
-  $("#projectionInfoPanel").innerHTML = `<span>Question <b>${questionInRound(state)} / ${state.config.questionsPerRound}</b></span><span>Manche <b>${state.round} / ${state.config.rounds}</b></span><span>Temps <b>${formatTime(state.remainingTime)}</b></span>`;
+  // Le panneau projection affiche la progression. Le grand compteur reste séparé.
+  $("#projectionInfoPanel").innerHTML = `<span>Question <b>${questionInRound(state)} / ${state.config.questionsPerRound}</b></span><span>Manche <b>${state.round} / ${state.config.rounds}</b></span>`;
   $("#projectionQuestion").textContent = showTransition ? transitionText() : (state.status === "finished" ? "Classement final" : (state.status === "round_results" ? `Résultats de la manche ${state.round}` : q.question));
   $("#projectionTimer").textContent = showTransition ? "" : formatTime(state.remainingTime);
   state.corrected && state.status !== "finished" ? showPublicAnswer("#projectionCorrectAnswer", q.correctAnswer) : hidePublicAnswer("#projectionCorrectAnswer");
@@ -564,8 +570,6 @@ function updateClockDisplays(){
     if(currentRole === "admin" && $("#adminTimer")) $("#adminTimer").textContent = text;
     if(currentRole === "player" && $("#playerTimer")) $("#playerTimer").textContent = text;
     if(currentRole === "projection" && $("#projectionTimer")) $("#projectionTimer").textContent = text;
-    const projectionTime = $("#projectionInfoPanel b:last-child");
-    if(currentRole === "projection" && projectionTime) projectionTime.textContent = text;
 
     // Seul l'arbitre verrouille officiellement la question à l'échéance.
     if(currentRole === "admin" && state.status === "running" && seconds <= 0 && !clockLockPending){
@@ -596,7 +600,7 @@ async function startApplication(){
   initActions();
   await initFromUrl();
   updateClockDisplays();
-  console.log("[BIBELQUIZZ 1.6.0] Firebase + Google Sheets démarrés");
+  console.log("[BIBELQUIZZ 1.6.2] Firebase + Google Sheets démarrés");
 }
 
 startApplication();

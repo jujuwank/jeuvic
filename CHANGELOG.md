@@ -1,3 +1,11 @@
+# JEUVIC V0.8.7
+
+## BIBLEQUIZZ V1.6.2
+- Correction de la progression sur la projection : « Question actuelle / total » est affiché séparément du chronomètre.
+- Remplacement du texte du tiroir arbitre par le bouton « Masquer classement ».
+- Intégration professionnelle de la signature « Made by J.S.P » sur JEUVIC et BIBLEQUIZZ.
+- Refonte responsive de l’interface joueur : meilleure hiérarchie, typographie, zones tactiles, choix QCM et score.
+
 # JEUVIC V0.8.6
 
 ## BIBELQUIZZ V1.6.1

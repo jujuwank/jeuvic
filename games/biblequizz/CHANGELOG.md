@@ -1,3 +1,10 @@
+# BIBLEQUIZZ V1.6.2
+
+- Projection : progression Question X / Y corrigée et dissociée du grand chronomètre.
+- Classement arbitre : bouton « Masquer classement » intégré dans le tiroir.
+- Signature « Made by J.S.P » ajoutée au jeu.
+- Design joueur modernisé et optimisé pour téléphone.
+
 # BIBELQUIZZ V1.6.1
 
 - Ajout de l’option **Regarder** dans la liste des parties en cours.

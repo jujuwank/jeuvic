@@ -6,3 +6,8 @@
  ***********************************************************************/
 
 .jv-footer{padding:30px 8%;text-align:center;color:var(--jv-color-muted);border-top:1px solid var(--jv-color-border);}
+
+.jv-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.jv-footer-signature{display:inline-flex;align-items:center;gap:4px;padding:7px 11px;border:1px solid rgba(244,197,66,.28);border-radius:999px;background:rgba(244,197,66,.08);font-size:.72rem;letter-spacing:.07em}
+.jv-footer-signature b{color:var(--jv-color-primary);letter-spacing:.13em}
+@media(max-width:620px){.jv-footer{justify-content:center;text-align:center}.jv-footer span{width:100%}.jv-footer-signature{width:auto!important}}

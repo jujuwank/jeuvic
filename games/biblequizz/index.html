@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BIBELQUIZZ V1.6.0 - JEUVIC</title>
+  <title>BIBELQUIZZ V1.6.2 - JEUVIC</title>
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
   <header class="app-header">
-    <div class="brand"><span>JEUVIC</span> / BIBELQUIZZ</div>
+    <div class="brand-wrap"><div class="brand"><span>JEUVIC</span> / BIBELQUIZZ</div><span class="creator-mark">Made by <b>J.S.P</b></span></div>
     <a class="back-link" href="../../index.html">← Retour JEUVIC</a>
   </header>
 
@@ -100,7 +100,7 @@
         </div>
         <aside id="adminRankingDrawer" class="admin-ranking-drawer" aria-hidden="true">
           <div class="admin-ranking-handle"></div>
-          <div class="admin-ranking-head"><div><p class="eyebrow">CLASSEMENT PRIVÉ</p><h3>Classement actuel</h3></div><span>Visible uniquement par l'arbitre</span></div>
+          <div class="admin-ranking-head"><div><p class="eyebrow">CLASSEMENT PRIVÉ</p><h3>Classement actuel</h3></div><button id="drawerHideRankingBtn" class="drawer-hide-btn" type="button">Masquer classement</button></div>
           <div id="adminRankingList" class="admin-ranking-list"></div>
         </aside>
       </div>
@@ -185,6 +185,8 @@
       </div>
     </section>
   </main>
+
+  <footer class="game-footer"><span>JEUVIC / BIBELQUIZZ</span><span class="footer-signature">Made by <b>J.S.P</b></span></footer>
 
   <script type="module" src="assets/js/core/App.js"></script>
 </body>

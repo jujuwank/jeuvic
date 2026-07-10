@@ -564,3 +564,279 @@ button:disabled.btn,
 .admin-rank-row:first-child{border-color:rgba(244,197,66,.36);background:rgba(244,197,66,.08)}
 .empty-ranking{margin:0;padding:18px;text-align:center;color:rgba(255,255,255,.55)}
 @media(max-width:760px){.admin-ranking-drawer{padding:12px 16px 20px;max-height:72%}.admin-ranking-head{align-items:flex-start;flex-direction:column}.admin-ranking-head>span{display:none}}
+
+/*=========================================================
+  BIBELQUIZZ V1.6.2 — Signature J.S.P et interface joueur
+=========================================================*/
+.brand-wrap{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+.creator-mark,
+.footer-signature{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:6px 10px;
+  border:1px solid rgba(244,197,66,.28);
+  border-radius:999px;
+  background:rgba(244,197,66,.08);
+  color:rgba(255,255,255,.68);
+  font-size:.72rem;
+  letter-spacing:.07em;
+  white-space:nowrap;
+}
+.creator-mark b,
+.footer-signature b{color:var(--gold);letter-spacing:.13em}
+.game-footer{
+  width:min(1120px,92%);
+  margin:0 auto 28px;
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  border-top:1px solid var(--border);
+  color:rgba(255,255,255,.45);
+  font-size:.8rem;
+}
+
+/* Bouton de fermeture intégré au tiroir de classement. */
+.drawer-hide-btn{
+  border:1px solid rgba(244,197,66,.35);
+  border-radius:12px;
+  padding:10px 14px;
+  background:rgba(244,197,66,.10);
+  color:var(--gold);
+  font-weight:850;
+  cursor:pointer;
+  transition:transform .2s ease,background .2s ease,border-color .2s ease;
+}
+.drawer-hide-btn:hover{
+  transform:translateY(-1px);
+  background:rgba(244,197,66,.17);
+  border-color:rgba(244,197,66,.55);
+}
+
+/* Projection : la progression est lisible, le chrono reste le grand élément séparé. */
+.projection-info-panel{
+  grid-template-columns:repeat(2,minmax(170px,1fr));
+  width:min(620px,100%);
+}
+
+/* Interface joueur : carte compacte, hiérarchie claire et grandes zones tactiles. */
+#playerJoinScreen,
+#playerGameScreen{
+  width:min(820px,100%);
+  margin-inline:auto;
+}
+#playerJoinScreen .player-panel,
+#playerGameScreen .player-panel{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(22px,4vw,38px);
+  border-color:rgba(121,146,255,.22);
+  background:
+    radial-gradient(circle at 100% 0,rgba(121,146,255,.16),transparent 32%),
+    radial-gradient(circle at 0 100%,rgba(244,197,66,.09),transparent 34%),
+    rgba(15,22,43,.96);
+}
+#playerJoinScreen .player-panel::before,
+#playerGameScreen .player-panel::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:3px;
+  background:linear-gradient(90deg,var(--gold),#8f82ff,#4f8cff);
+}
+#playerJoinScreen h1{
+  margin-top:8px;
+  font-size:clamp(2rem,6vw,3.35rem);
+  letter-spacing:-.035em;
+}
+#playerJoinScreen .join-row{
+  display:grid;
+  grid-template-columns:1fr 180px auto;
+  align-items:end;
+  gap:12px;
+  margin-top:28px;
+}
+#playerJoinScreen input{
+  min-height:54px;
+  font-size:1rem;
+}
+#playerJoinScreen #playerGameCode{
+  text-align:center;
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  font-weight:900;
+}
+#playerJoinScreen #joinBtn{
+  min-height:54px;
+  padding-inline:24px;
+}
+
+#playerGameArea{
+  display:grid;
+  gap:18px;
+}
+.player-question{
+  display:grid;
+  gap:12px;
+  padding:clamp(20px,4vw,30px);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;
+  background:rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+#playerQuestionProgress{
+  margin:0;
+  font-size:.8rem;
+  letter-spacing:.16em;
+  color:var(--gold);
+}
+#playerQuestion{
+  margin:0;
+  font-size:clamp(1.75rem,5.5vw,3.35rem);
+  line-height:1.12;
+  letter-spacing:-.025em;
+}
+.player-timer-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-top:4px;
+  padding:12px 14px;
+  border:1px solid rgba(244,197,66,.22);
+  border-radius:15px;
+  background:rgba(244,197,66,.075);
+  color:rgba(255,255,255,.68);
+  font-size:.84rem;
+  font-weight:750;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+#playerTimer{
+  color:var(--gold);
+  font-size:clamp(1.35rem,5vw,2rem);
+  line-height:1;
+  letter-spacing:.02em;
+}
+#playerOptions.choice-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:0;
+}
+#playerOptions .choice{
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px 17px;
+  color:#fff;
+  text-align:left;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+  font-weight:750;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,.10);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+#playerOptions .choice:not(:disabled):hover{
+  transform:translateY(-2px);
+  border-color:rgba(244,197,66,.46);
+  background:rgba(244,197,66,.10);
+}
+#playerOptions .choice.selected{
+  border-color:var(--gold);
+  background:linear-gradient(135deg,rgba(244,197,66,.24),rgba(244,197,66,.10));
+  box-shadow:0 0 0 3px rgba(244,197,66,.10),0 12px 26px rgba(0,0,0,.16);
+}
+#playerOptions .choice-letter{
+  flex:0 0 38px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:rgba(255,255,255,.09);
+  color:var(--gold);
+  font-size:1rem;
+  font-weight:950;
+}
+#playerOptions .choice-text{
+  min-width:0;
+  font-size:clamp(.98rem,2.8vw,1.14rem);
+  line-height:1.3;
+}
+#playerOptions .choice.correct-choice{
+  border-color:rgba(55,209,123,.8);
+  background:rgba(55,209,123,.18);
+}
+#playerOptions .choice.wrong-choice{
+  border-color:rgba(255,83,102,.84);
+  background:rgba(255,83,102,.18);
+}
+#playerGameArea > label{
+  gap:10px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+  color:rgba(255,255,255,.72);
+}
+#playerAnswer{
+  min-height:58px;
+  border-radius:15px;
+  font-size:1.06rem;
+}
+#playerMessage{
+  min-height:1.3em;
+  margin:0;
+  text-align:center;
+  font-size:.9rem;
+}
+.player-score-badge{
+  margin:0;
+  padding:15px 18px;
+  border-radius:18px;
+}
+.player-score-badge strong{
+  font-size:clamp(1.25rem,4vw,1.65rem);
+}
+.waiting-screen{
+  min-height:410px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:15px;
+}
+.waiting-screen h2{
+  font-size:clamp(2rem,7vw,3.8rem);
+  margin:0;
+}
+.waiting-screen > p:not(.eyebrow){
+  max-width:560px;
+  color:rgba(255,255,255,.66);
+  line-height:1.65;
+}
+
+@media(max-width:760px){
+  .brand-wrap{width:100%;justify-content:space-between}
+  .creator-mark{font-size:.65rem;padding:5px 8px}
+  .game-footer{align-items:flex-start;flex-direction:column}
+  #playerJoinScreen .join-row{grid-template-columns:1fr}
+  #playerJoinScreen #playerGameCode{text-align:left}
+  #playerOptions.choice-list{grid-template-columns:1fr}
+  #playerOptions .choice{min-height:66px}
+  .player-question{padding:19px}
+  .projection-info-panel{grid-template-columns:1fr 1fr}
+  .drawer-hide-btn{width:100%}
+}
