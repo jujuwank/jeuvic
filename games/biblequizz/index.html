@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BIBELQUIZZ V1.4.0 - JEUVIC</title>
+  <title>BIBELQUIZZ V1.5.3 - JEUVIC</title>
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
@@ -41,9 +41,9 @@
         </div>
         <p id="adminCodeError" class="message"></p>
         <div class="grid two">
-          <label>Nombre de manches<input id="roundCount" type="number" min="1" max="20" value="3"></label>
+          <label>Nombre de manches<input id="roundCount" type="number" min="1" max="20" value="1"></label>
           <label>Questions par manche<input id="questionsPerRound" type="number" min="1" max="20" value="3"></label>
-          <label>Temps par défaut (secondes)<input id="questionTime" type="number" min="5" max="300" value="45"></label>
+          <label>Temps par défaut (secondes)<input id="questionTime" type="number" min="5" max="300" value="20"></label>
           <label>Nombre max joueurs<input id="maxPlayers" type="number" min="2" max="15" value="15"></label>
         </div>
         <div class="sheet-config-box">
@@ -89,8 +89,7 @@
         <div id="adminOptions" class="options-preview"></div>
         <h3>Réponses des participants</h3>
         <table class="answers-table"><thead><tr><th>Participant</th><th>Réponse</th><th>Points</th></tr></thead><tbody id="answersTable"></tbody></table>
-        <div id="adminFinalRanking" class="final-ranking hidden"></div>
-        <div class="actions split">
+                <div class="actions split">
           <button id="startTimerBtn" class="btn primary">LANCER</button>
           <button id="skipQuestionBtn" class="btn secondary">PASSER</button>
           <button id="nextQuestionBtn" class="btn success">QUESTION SUIVANTE</button>

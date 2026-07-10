@@ -6,16 +6,24 @@
  ***********************************************************************/
 export const TRANSITION_DURATION = 3000;
 
+// Paramètres administrateur et valeurs par défaut de création de partie.
+export const ADMIN_PASSWORD = "JuJu-admin";
+export const DEFAULT_ROUNDS = 1;
+export const DEFAULT_QUESTION_TIME = 20;
+
 // Code partie : 4 caractères A-Z/0-9, avec au moins un chiffre.
 export const GAME_CODE_LENGTH = 4;
 export const GAME_CODE_PATTERN = /^(?=.*\d)[A-Z0-9]{4}$/;
 
 export const Config = {
   appName: "JEUVIC / BIBELQUIZZ",
-  version: "1.4.0",
+  version: "1.5.3",
 
   // Alias conservés pour lire la configuration depuis l'objet Config si besoin.
   transitionDuration: TRANSITION_DURATION,
+  adminPassword: ADMIN_PASSWORD,
+  defaultRounds: DEFAULT_ROUNDS,
+  defaultQuestionTime: DEFAULT_QUESTION_TIME,
   gameCodeLength: GAME_CODE_LENGTH,
   gameCodePattern: GAME_CODE_PATTERN,
 

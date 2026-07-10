@@ -6,7 +6,7 @@
  ***********************************************************************/
 import { demoQuestions } from "../games/bibelquizz/Questions.js";
 import { AnswerChecker } from "./AnswerChecker.js";
-import { Config, TRANSITION_DURATION, GAME_CODE_PATTERN } from "../core/Config.js";
+import { Config, TRANSITION_DURATION, GAME_CODE_PATTERN, DEFAULT_ROUNDS, DEFAULT_QUESTION_TIME } from "../core/Config.js";
 import { GoogleSheetsQuestionStore } from "../services/GoogleSheetsQuestionStore.js";
 
 const ROOMS_KEY = "JEUVIC_BIBELQUIZZ_ROOMS_V140";
@@ -24,7 +24,7 @@ export class BibelQuizzEngine {
     this.round = 1;
     this.config = this.defaultConfig();
     this.timer = null;
-    this.remainingTime = 45;
+    this.remainingTime = DEFAULT_QUESTION_TIME;
     this.status = "setup";
     this.transitionTimer = null;
     this.answers = new Map();
@@ -38,9 +38,9 @@ export class BibelQuizzEngine {
 
   defaultConfig(){
     return {
-      rounds: 3,
+      rounds: DEFAULT_ROUNDS,
       questionsPerRound: 3,
-      time: 45,
+      time: DEFAULT_QUESTION_TIME,
       maxPlayers: Config.maxPlayers,
       questionsSheetUrl: Config.defaultQuestionsSheetUrl
     };
@@ -171,6 +171,34 @@ export class BibelQuizzEngine {
     this.store?.unsubscribe?.();
     this.resetRuntime();
     this.activeCode = null;
+  }
+
+  /*---------------------------------------------------------
+    Termine puis supprime une partie précise depuis l'accueil.
+  ---------------------------------------------------------*/
+  async deleteRoomByCode(code){
+    const normalizedCode = this.normalizeCode(code);
+    if(!normalizedCode) return false;
+
+    if(this.cloudEnabled){
+      const room = await this.store.getRoom(normalizedCode);
+      if(!room) return false;
+      await this.store.saveRoom({ ...room, status:"finished", updatedAt:Date.now() });
+      await this.store.deleteRoom(normalizedCode);
+    }else{
+      const rooms = this.readRooms();
+      if(!rooms[normalizedCode]) return false;
+      rooms[normalizedCode].status = "finished";
+      delete rooms[normalizedCode];
+      this.writeRooms(rooms);
+    }
+
+    if(this.activeCode === normalizedCode){
+      this.store?.unsubscribe?.();
+      this.resetRuntime();
+      this.activeCode = null;
+    }
+    return true;
   }
 
   subscribeToRoom(code){
@@ -552,7 +580,7 @@ export class BibelQuizzEngine {
     this.currentQuestionIndex = 0;
     this.round = 1;
     this.config = this.defaultConfig();
-    this.remainingTime = 45;
+    this.remainingTime = DEFAULT_QUESTION_TIME;
     this.status = "setup";
     this.answers = new Map();
     this.pendingAnswers = new Map();

@@ -9,6 +9,7 @@
 import { EventBus } from "../engine/EventBus.js";
 import { BibelQuizzEngine } from "../engine/BibelQuizzEngine.js";
 import { FirebaseRoomStore } from "../services/FirebaseRoomStore.js";
+import { ADMIN_PASSWORD, DEFAULT_ROUNDS, DEFAULT_QUESTION_TIME } from "./Config.js";
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
@@ -91,6 +92,8 @@ function initActions(){
     currentRole = "admin";
     engine.createDraftGame();
     $("#adminGameCode").value = "";
+    $("#roundCount").value = DEFAULT_ROUNDS;
+    $("#questionTime").value = DEFAULT_QUESTION_TIME;
     $("#adminCodeError").textContent = "";
     history.replaceState(null, "", `?role=admin`);
     showScreen("adminSetupScreen");
@@ -267,7 +270,7 @@ async function renderHome(){
   if(!list) return;
   const rooms = await engine.getActiveRooms();
   list.innerHTML = rooms.length
-    ? rooms.map(room => `<div class="lobby-player"><span>${room.code}</span><div><strong>${room.status}</strong><br><small>${room.players?.length || 0} joueur(s)</small></div><button class="btn secondary small" data-admin-code="${room.code}">Ouvrir</button></div>`).join("")
+    ? rooms.map(room => `<div class="lobby-player"><span>${room.code}</span><div><strong>${room.status}</strong><br><small>${room.players?.length || 0} joueur(s)</small></div><div class="game-list-actions"><button class="btn secondary small" data-admin-code="${room.code}">Ouvrir</button><button class="btn danger small" data-delete-code="${room.code}">Supprimer</button></div></div>`).join("")
     : `<div class="empty-lobby">Aucune partie en cours.</div>`;
   $$(`[data-admin-code]`).forEach(btn => btn.addEventListener("click", async () => {
     const code = btn.dataset.adminCode;
@@ -277,6 +280,19 @@ async function renderHome(){
       showAdminByStatus(engine.getState());
       render(engine.getState());
     }
+  }));
+  $$(`[data-delete-code]`).forEach(btn => btn.addEventListener("click", async () => {
+    const code = btn.dataset.deleteCode;
+    const password = window.prompt(`Mot de passe administrateur pour supprimer la partie ${code} :`);
+    if(password === null) return;
+    if(password !== ADMIN_PASSWORD){
+      alert("Mot de passe incorrect.");
+      return;
+    }
+    if(!window.confirm(`Confirmer la suppression définitive de la partie ${code} ?`)) return;
+    const deleted = await engine.deleteRoomByCode(code);
+    alert(deleted ? "La partie a été terminée et supprimée." : "Partie introuvable.");
+    await renderHome();
   }));
 }
 
@@ -310,13 +326,6 @@ function renderAdmin(state){
     const pts = player.lastPoints === undefined ? "—" : (player.lastPoints > 0 ? `+${player.lastPoints}` : "0");
     return `<tr><td>${escapeHtml(player.name)}</td><td>${escapeHtml(answer)}</td><td>${pts}</td></tr>`;
   }).join("") || `<tr><td colspan="3">Aucun participant.</td></tr>`;
-  const finalRanking = $("#adminFinalRanking");
-  const rankingVisible = !["transition", "waiting", "running"].includes(state.status) && state.players.length > 0;
-  finalRanking.classList.toggle("hidden", !rankingVisible);
-  finalRanking.innerHTML = rankingVisible
-    ? `<h3>${state.status === "finished" ? "Classement final" : "Classement privé de l’arbitre"}</h3>` +
-      state.ranking.map((player, index) => `<div class="rank-row"><span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${player.score} pts</strong></div>`).join("")
-    : "";
   updateAdminButtons(state);
 }
 

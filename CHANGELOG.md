@@ -1,3 +1,11 @@
+# JEUVIC V0.8.4 / BIBELQUIZZ V1.5.3
+
+- Suppression du classement de l’interface arbitre.
+- Ajout de la suppression protégée des parties depuis l’accueil.
+- Mot de passe administrateur centralisé dans `Config.js`.
+- Nombre de manches par défaut : 1.
+- Temps par défaut : 20 secondes.
+
 # JEUVIC V0.8.2
 
 - Correction du stockage Firestore des réponses (objet au lieu de tableaux imbriqués non supportés).

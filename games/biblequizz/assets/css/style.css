@@ -342,3 +342,6 @@ button:disabled.btn,
   box-shadow:0 0 0 3px rgba(255,77,94,.14);
 }
 .final-ranking h3{margin:20px 0 10px;color:var(--gold)}
+
+/* Actions disponibles pour chaque partie dans la liste d’accueil. */
+.game-list-actions{display:flex;gap:.55rem;flex-wrap:wrap;justify-content:flex-end}
