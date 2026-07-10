@@ -1,3 +1,11 @@
+# JEUVIC V0.8.6
+
+## BIBELQUIZZ V1.6.1
+- Option Regarder depuis l’accueil.
+- Réponses autorisées avant LANCER.
+- Score cumulé joueur amélioré.
+- Classement arbitre privé dans un tiroir animé.
+
 # JEUVIC V0.8.5
 
 - Chronomètre synchronisé par timestamp commun, sans écriture Firebase chaque seconde.

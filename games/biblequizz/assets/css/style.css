@@ -508,3 +508,59 @@ button:disabled.btn,
   .game-list-actions{ justify-content: stretch; }
   .game-list-actions .btn{ flex: 1 1 150px; }
 }
+
+
+/*=========================================================
+  BIBELQUIZZ V1.6.1 — Regarder, score joueur et classement
+=========================================================*/
+.player-score-badge{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin:18px 0;
+  padding:13px 16px;
+  border:1px solid rgba(244,197,66,.30);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(244,197,66,.13),rgba(255,255,255,.04));
+}
+.player-score-badge span{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.68)}
+.player-score-badge strong{font-size:1.18rem;color:var(--gold)}
+
+.admin-board{position:relative;overflow:hidden}
+.admin-ranking-drawer{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:20;
+  max-height:66%;
+  padding:14px 24px 24px;
+  border-top:1px solid rgba(255,255,255,.14);
+  border-radius:24px 24px 0 0;
+  background:rgba(10,14,31,.98);
+  box-shadow:0 -22px 55px rgba(0,0,0,.45);
+  transform:translateY(calc(100% + 8px));
+  opacity:0;
+  visibility:hidden;
+  transition:transform .38s cubic-bezier(.22,.8,.25,1),opacity .25s ease,visibility 0s linear .38s;
+  overflow:auto;
+}
+.admin-ranking-drawer.open{
+  transform:translateY(0);
+  opacity:1;
+  visibility:visible;
+  transition-delay:0s;
+}
+.admin-ranking-handle{width:56px;height:5px;margin:0 auto 16px;border-radius:999px;background:rgba(255,255,255,.25)}
+.admin-ranking-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px}
+.admin-ranking-head h3{margin:3px 0 0}
+.admin-ranking-head>span{font-size:.78rem;color:rgba(255,255,255,.55)}
+.admin-ranking-list{display:grid;gap:9px}
+.admin-rank-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 14px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.05)}
+.admin-rank-row span{display:flex;align-items:center;gap:12px}
+.admin-rank-row span b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(142,130,255,.18);color:#c7c1ff}
+.admin-rank-row strong{color:var(--gold)}
+.admin-rank-row:first-child{border-color:rgba(244,197,66,.36);background:rgba(244,197,66,.08)}
+.empty-ranking{margin:0;padding:18px;text-align:center;color:rgba(255,255,255,.55)}
+@media(max-width:760px){.admin-ranking-drawer{padding:12px 16px 20px;max-height:72%}.admin-ranking-head{align-items:flex-start;flex-direction:column}.admin-ranking-head>span{display:none}}

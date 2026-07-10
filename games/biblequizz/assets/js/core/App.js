@@ -185,6 +185,19 @@ function initActions(){
   });
   $("#skipQuestionBtn")?.addEventListener("click", async () => engine.skipQuestion());
   $("#nextQuestionBtn")?.addEventListener("click", async () => { if(!engine.getState().corrected) await engine.correctQuestion(); await engine.nextQuestion(); });
+
+  // Affiche ou masque le classement privé de l'arbitre.
+  $("#toggleAdminRankingBtn")?.addEventListener("click", () => {
+    const drawer = $("#adminRankingDrawer");
+    const button = $("#toggleAdminRankingBtn");
+    if(!drawer || !button) return;
+    const willOpen = !drawer.classList.contains("open");
+    drawer.classList.toggle("open", willOpen);
+    drawer.setAttribute("aria-hidden", String(!willOpen));
+    button.textContent = willOpen ? "MASQUER CLASS" : "AFFICH CLASSEMENT";
+    button.setAttribute("aria-expanded", String(willOpen));
+  });
+
   $("#nextRoundBtn")?.addEventListener("click", async () => engine.nextQuestion());
   $("#resultsBtn")?.addEventListener("click", async () => {
     const state = engine.getState();
@@ -290,6 +303,7 @@ async function renderHome(){
         </div>
         <div class="game-list-actions">
           <button class="btn primary small" data-admin-code="${escapeHtml(room.code)}">Ouvrir la partie</button>
+          <button class="btn secondary small" data-watch-code="${escapeHtml(room.code)}">Regarder</button>
           <button class="btn danger ghost small" data-delete-code="${escapeHtml(room.code)}">Supprimer</button>
         </div>
       </article>`).join("")
@@ -303,6 +317,16 @@ async function renderHome(){
       render(engine.getState());
     }
   }));
+  $$(`[data-watch-code]`).forEach(btn => btn.addEventListener("click", async () => {
+    const code = btn.dataset.watchCode;
+    if(await engine.loadGame(code)){
+      currentRole = "projection";
+      history.replaceState(null, "", `?code=${code}&role=projection`);
+      showScreen("projectionScreen");
+      render(engine.getState());
+    }
+  }));
+
   $$(`[data-delete-code]`).forEach(btn => btn.addEventListener("click", async () => {
     const code = btn.dataset.deleteCode;
     const password = window.prompt(`Mot de passe administrateur pour supprimer la partie ${code} :`);
@@ -348,6 +372,13 @@ function renderAdmin(state){
     const pts = player.lastPoints === undefined ? "—" : (player.lastPoints > 0 ? `+${player.lastPoints}` : "0");
     return `<tr><td>${escapeHtml(player.name)}</td><td>${escapeHtml(answer)}</td><td>${pts}</td></tr>`;
   }).join("") || `<tr><td colspan="3">Aucun participant.</td></tr>`;
+
+  const rankingList = $("#adminRankingList");
+  if(rankingList){
+    rankingList.innerHTML = state.ranking.length
+      ? state.ranking.map((player, index) => `<div class="admin-rank-row"><span><b>${index + 1}</b>${escapeHtml(player.name)}</span><strong>${Number(player.score || 0)} pts</strong></div>`).join("")
+      : `<p class="empty-ranking">Aucun classement disponible.</p>`;
+  }
   updateAdminButtons(state);
 }
 

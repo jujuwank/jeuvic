@@ -377,7 +377,10 @@ export class BibelQuizzEngine {
   }
 
   async submitAnswer(playerId, answer){
-    if(this.status !== "running") return false;
+    // La question peut être répondue dès qu'elle est affichée, avant même
+    // le lancement du chronomètre. Les réponses sont bloquées seulement
+    // pendant la transition ou après la clôture/correction.
+    if(!["waiting", "running"].includes(this.status) || this.corrected) return false;
     const player = this.players.find(p => p.id === playerId);
     if(!player) return false;
 

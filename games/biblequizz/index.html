@@ -93,10 +93,16 @@
           <button id="startTimerBtn" class="btn primary">LANCER</button>
           <button id="skipQuestionBtn" class="btn secondary">PASSER</button>
           <button id="nextQuestionBtn" class="btn success">QUESTION SUIVANTE</button>
+          <button id="toggleAdminRankingBtn" class="btn secondary" aria-expanded="false">AFFICH CLASSEMENT</button>
           <button id="nextRoundBtn" class="btn success hidden">MANCHE SUIVANTE</button>
           <button id="resultsBtn" class="btn danger hidden">RÉSULTATS</button>
           <button id="endGameBtn" class="btn danger">TERMINER LA PARTIE</button>
         </div>
+        <aside id="adminRankingDrawer" class="admin-ranking-drawer" aria-hidden="true">
+          <div class="admin-ranking-handle"></div>
+          <div class="admin-ranking-head"><div><p class="eyebrow">CLASSEMENT PRIVÉ</p><h3>Classement actuel</h3></div><span>Visible uniquement par l'arbitre</span></div>
+          <div id="adminRankingList" class="admin-ranking-list"></div>
+        </aside>
       </div>
     </section>
 
@@ -144,7 +150,7 @@
           <div id="playerOptions" class="choice-list"></div>
           <label>Votre réponse<input id="playerAnswer" placeholder="Écris ta réponse ici — sauvegarde automatique"></label>
           <p id="playerMessage" class="message"></p>
-          <p>Score : <strong id="playerScore">0</strong> pts</p>
+          <div class="player-score-badge"><span>Mon score cumulé</span><strong><b id="playerScore">0</b> pts</strong></div>
           <div id="playerFinalRanking" class="final-ranking hidden"></div>
           <div class="actions"><button id="playerHomeBtn" class="btn primary hidden">ACCUEIL</button></div>
         </div>

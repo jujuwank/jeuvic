@@ -164,7 +164,7 @@ export class FirebaseRoomStore {
       const snapshot = await transaction.get(roomRef);
       if(!snapshot.exists()) return false;
       const room = snapshot.data();
-      if(room.status !== "running") return false;
+      if(!["waiting", "running"].includes(room.status) || room.corrected) return false;
 
       const activeQuestionKey = `${Number(room.round || 1)}-${Number(room.currentQuestionIndex || 0)}`;
       if(activeQuestionKey !== questionKey) return false;

@@ -1,3 +1,9 @@
+# BIBELQUIZZ V1.6.1
+
+- Ajout de l’option **Regarder** dans la liste des parties en cours.
+- Enregistrement des réponses dès l’affichage de la question, avant le lancement du chronomètre.
+- Nouveau badge de score cumulé dans l’interface joueur.
+- Classement privé de l’arbitre dans un tiroir animé ouvrable et refermable.
 # BIBLEQUIZZ V1.6.0
 
 ## Stabilisation multijoueur
