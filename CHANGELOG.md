@@ -1,3 +1,10 @@
+# JEUVIC V0.8.8
+
+- Élargissement professionnel de la page Gestion des parties.
+- Signature « Made by J.S.P » réduite et sans cadre.
+- Écran final joueur simplifié.
+- Bouton de retour vers le choix du rôle ajouté.
+
 # JEUVIC V0.8.7
 
 ## BIBLEQUIZZ V1.6.2

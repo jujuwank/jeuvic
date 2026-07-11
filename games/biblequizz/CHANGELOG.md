@@ -1,3 +1,10 @@
+# BIBLEQUIZZ V1.6.3
+
+- Résultats joueur limités au titre, au score cumulé et au classement.
+- Suppression du chrono, de la bonne réponse, de la saisie et du bouton Accueil sur l’écran final.
+- Ajout du retour vers le choix Joueur / Spectateur.
+- Accueil des parties élargi et signature J.S.P rendue plus discrète.
+
 # BIBLEQUIZZ V1.6.2
 
 - Projection : progression Question X / Y corrigée et dissociée du grand chronomètre.

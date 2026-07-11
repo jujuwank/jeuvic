@@ -1,5 +1,5 @@
 /***********************************************************************
- * BIBELQUIZZ V1.6.2 - Interfaces séparées + Firebase + Google Sheets
+ * BIBELQUIZZ V1.6.3 - Interfaces séparées + Firebase + Google Sheets
  *
  * Parcours principal :
  * - JEUVIC ouvre BIBELQUIZZ sur l'accueil du jeu.
@@ -133,6 +133,12 @@ function initActions(){
   $("#chooseSpectatorModeBtn")?.addEventListener("click", () => {
     const code = normalizeCodeInput(new URLSearchParams(location.search).get("code"));
     location.href = `${getBaseUrl()}?role=projection&code=${encodeURIComponent(code)}`;
+  });
+
+  // Retour depuis le formulaire joueur vers le choix du rôle, en conservant le code de partie.
+  $("#backToRoleChoiceBtn")?.addEventListener("click", () => {
+    const code = normalizeCodeInput($("#playerGameCode")?.value || new URLSearchParams(location.search).get("code"));
+    location.href = `${getBaseUrl()}?role=choose&code=${encodeURIComponent(code)}`;
   });
 
   $("#joinBtn")?.addEventListener("click", async () => {
@@ -453,22 +459,32 @@ function renderPlayer(state){
   const questionKey = `${state.round}-${state.currentQuestionIndex}`;
   const locked = state.status === "locked" || state.status === "round_results" || state.status === "finished" || state.corrected;
   if(questionKey !== lastRenderedPlayerQuestionKey){ resetPlayerInterface(); lastRenderedPlayerQuestionKey = questionKey; }
+  const finalResultMode = state.status === "finished";
+  playerGameArea.classList.toggle("final-result-mode", finalResultMode);
   $("#playerQuestionProgress").textContent = state.status === "transition" ? transitionTitle(state) : questionProgressText(state);
-  $("#playerQuestion").textContent = state.status === "transition" ? transitionText() : (state.status === "finished" ? "Partie terminée" : (state.status === "round_results" ? `Résultats de la manche ${state.round}` : q.question));
+  $("#playerQuestion").textContent = state.status === "transition" ? transitionText() : (finalResultMode ? "Partie terminée" : (state.status === "round_results" ? `Résultats de la manche ${state.round}` : q.question));
   $("#playerTimer").textContent = formatTime(state.remainingTime);
-  state.corrected ? showPublicAnswer("#playerCorrectAnswer", q.correctAnswer) : hidePublicAnswer("#playerCorrectAnswer");
 
-  if(state.status === "transition"){
-    $("#playerOptions").innerHTML = ""; $("#playerAnswer").classList.add("hidden");
-  } else if(["qcm", "vrai_faux", "true_false"].includes(q.type) && !["finished", "round_results"].includes(state.status)) renderPlayerQcmOptions(q, locked, state);
-  else renderPlayerDirectAnswer(locked, state);
+  // Sur l'écran final, seuls le titre, le score cumulé et le classement restent visibles.
+  if(finalResultMode){
+    hidePublicAnswer("#playerCorrectAnswer");
+    $("#playerOptions").innerHTML = "";
+    $("#playerAnswer").classList.add("hidden");
+    $("#playerMessage").textContent = "";
+  } else {
+    state.corrected ? showPublicAnswer("#playerCorrectAnswer", q.correctAnswer) : hidePublicAnswer("#playerCorrectAnswer");
+    if(state.status === "transition"){
+      $("#playerOptions").innerHTML = ""; $("#playerAnswer").classList.add("hidden");
+    } else if(["qcm", "vrai_faux", "true_false"].includes(q.type) && state.status !== "round_results") renderPlayerQcmOptions(q, locked, state);
+    else renderPlayerDirectAnswer(locked, state);
+  }
   const freshPlayer = currentPlayer ? state.players.find(p => p.id === currentPlayer.id) : null;
   if(freshPlayer) $("#playerScore").textContent = freshPlayer.score;
   const ranking = $("#playerFinalRanking");
   const homeButton = $("#playerHomeBtn");
   const publicRankingVisible = state.status === "round_results" || state.status === "finished";
   ranking.classList.toggle("hidden", !publicRankingVisible);
-  homeButton.classList.toggle("hidden", state.status !== "finished");
+  homeButton.classList.add("hidden");
   ranking.innerHTML = publicRankingVisible
     ? `<h3>${state.status === "finished" ? "Classement final" : `Résultats de la manche ${state.round}`}</h3>` +
       state.ranking.map((player, index) => `<div class="rank-row"><span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${player.score} pts</strong></div>`).join("")
@@ -600,7 +616,7 @@ async function startApplication(){
   initActions();
   await initFromUrl();
   updateClockDisplays();
-  console.log("[BIBELQUIZZ 1.6.2] Firebase + Google Sheets démarrés");
+  console.log("[BIBELQUIZZ 1.6.3] Firebase + Google Sheets démarrés");
 }
 
 startApplication();

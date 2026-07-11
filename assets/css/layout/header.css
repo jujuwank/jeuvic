@@ -18,6 +18,6 @@
 
 /* Signature créateur JEUVIC */
 .jv-brand-block{display:flex;align-items:center;gap:14px}
-.jv-creator-mark{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border:1px solid rgba(244,197,66,.28);border-radius:999px;background:rgba(244,197,66,.08);color:var(--jv-color-muted);font-size:.7rem;letter-spacing:.07em;white-space:nowrap}
-.jv-creator-mark b{color:var(--jv-color-primary);letter-spacing:.13em}
-@media(max-width:760px){.jv-brand-block{width:100%;justify-content:center}.jv-creator-mark{font-size:.62rem;padding:5px 8px}}
+.jv-creator-mark{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;border-radius:0;background:transparent;color:rgba(255,255,255,.42);font-size:.58rem;letter-spacing:.045em;white-space:nowrap}
+.jv-creator-mark b{color:rgba(244,197,66,.78);letter-spacing:.09em}
+@media(max-width:760px){.jv-brand-block{width:100%;justify-content:center}.jv-creator-mark{font-size:.54rem;padding:0}}
