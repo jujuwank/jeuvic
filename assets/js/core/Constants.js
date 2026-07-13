@@ -18,6 +18,26 @@ export const Constants = Object.freeze({
       launchPath: "games/biblequizz/index.html"
     },
     {
+      id: "revelation",
+      name: "Révélation",
+      icon: "🔍",
+      description: "Jeu chrétien d’indices progressifs avec buzzer, arbitre et projection en temps réel.",
+      category: "Indices & rapidité",
+      version: "1.0.4",
+      enabled: true,
+      launchPath: "games/revelation/index.html"
+    },
+    {
+      id: "proverbes",
+      name: "Proverbes",
+      icon: "💬",
+      description: "Jeu multijoueur de phrase cachée : lettres, propositions privées et validation par l’arbitre.",
+      category: "Phrase cachée",
+      version: "1.0.0",
+      enabled: true,
+      launchPath: "games/proverbes/index.html"
+    },
+    {
       id: "quiz",
       name: "Quiz",
       icon: "🧠",

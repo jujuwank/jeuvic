@@ -30,3 +30,48 @@
         flex-direction:column;
     }
 }
+
+/*============================================================
+  JEUVIC V0.8.9 — MOBILE UX PASS
+============================================================*/
+@media (max-width:600px){
+  body{overflow-x:hidden}
+  .jv-header{
+    min-height:64px;
+    padding:12px 14px;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .jv-brand-block{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .jv-logo{font-size:1.25rem}
+  .jv-creator-mark{font-size:.54rem}
+  .jv-nav{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+  }
+  .jv-nav a{
+    padding:9px 4px;
+    text-align:center;
+    border-radius:10px;
+    font-size:.72rem;
+  }
+  .jv-container{padding-left:14px;padding-right:14px}
+  .jv-hero{padding-top:34px;padding-bottom:44px;gap:24px}
+  .jv-hero-left h2{font-size:clamp(2rem,12vw,3rem);line-height:1.03}
+  .jv-hero-left p{font-size:.96rem;line-height:1.6}
+  .jv-actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .jv-btn{width:100%;min-height:52px}
+  .jv-card{padding:20px 16px;border-radius:20px}
+  .jv-games-grid{grid-template-columns:1fr;gap:14px}
+  .jv-section-title h2{font-size:2rem}
+  .jv-input{min-height:52px;font-size:16px}
+  .jv-footer{padding:22px 14px;flex-direction:column;gap:6px;text-align:center;font-size:.72rem}
+}

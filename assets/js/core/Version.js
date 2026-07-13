@@ -7,7 +7,7 @@
 
 export const Version = Object.freeze({
   name: "JEUVIC",
-  version: "0.8.7",
-  codename: "JSP Signature",
-  releaseDate: "2026-07-11"
+  version: "0.11.0",
+  codename: "Revelation Control",
+  releaseDate: "2026-07-13"
 });

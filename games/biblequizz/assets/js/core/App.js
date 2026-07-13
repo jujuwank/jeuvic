@@ -9,7 +9,8 @@
 import { EventBus } from "../engine/EventBus.js";
 import { BibelQuizzEngine } from "../engine/BibelQuizzEngine.js";
 import { FirebaseRoomStore } from "../services/FirebaseRoomStore.js";
-import { ADMIN_PASSWORD, DEFAULT_ROUNDS, DEFAULT_QUESTION_TIME } from "./Config.js";
+import { ADMIN_PASSWORD, DEFAULT_ROUNDS, DEFAULT_QUESTION_TIME, DEFAULT_GOOGLE_SHEET_URL } from "./Config.js";
+import { GoogleSheetsQuestionStore } from "../services/GoogleSheetsQuestionStore.js";
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
@@ -24,6 +25,8 @@ let currentPlayer = null;
 let lastRenderedPlayerQuestionKey = null;
 let latestState = null;
 let clockLockPending = false;
+const sheetTester = new GoogleSheetsQuestionStore();
+let customSheetUrlCache = "";
 
 /*=========================================================
   OUTILS D'AFFICHAGE
@@ -49,6 +52,36 @@ function transitionText(){ return "Préparez-vous..."; }
 function getBaseUrl(){ return window.location.href.split("?")[0].split("#")[0]; }
 function normalizeCodeInput(value){ return String(value || "").trim().toUpperCase(); }
 function sharedAccessLink(code = engine.getState().code){ return `${getBaseUrl()}?role=choose&code=${encodeURIComponent(code || "")}`; }
+
+/*=========================================================
+  BANQUE DE QUESTIONS GOOGLE SHEETS
+=========================================================*/
+function getSelectedQuestionsSheetUrl(){
+  const useCustom = $("#sheetModeCustom")?.checked;
+  return useCustom ? $("#questionsSheetUrl")?.value.trim() : DEFAULT_GOOGLE_SHEET_URL;
+}
+
+function applySheetMode(mode = "default"){
+  const isCustom = mode === "custom";
+  const input = $("#questionsSheetUrl");
+  if(!input) return;
+
+  if(isCustom){
+    input.readOnly = false;
+    input.value = customSheetUrlCache;
+    input.focus();
+  } else {
+    if(!input.readOnly) customSheetUrlCache = input.value.trim();
+    input.value = DEFAULT_GOOGLE_SHEET_URL;
+    input.readOnly = true;
+  }
+
+  $$(".sheet-mode-card").forEach(card => card.classList.remove("selected"));
+  $(isCustom ? "#sheetModeCustom" : "#sheetModeDefault")?.closest(".sheet-mode-card")?.classList.add("selected");
+  const message = $("#sheetTestMessage");
+  if(message){ message.textContent = ""; message.className = "sheet-test-message"; }
+}
+
 
 /*=========================================================
   ROUTAGE PAR URL
@@ -96,6 +129,10 @@ function initActions(){
     $("#adminGameCode").value = "";
     $("#roundCount").value = DEFAULT_ROUNDS;
     $("#questionTime").value = DEFAULT_QUESTION_TIME;
+    $("#sheetModeDefault").checked = true;
+    $("#sheetModeCustom").checked = false;
+    customSheetUrlCache = "";
+    applySheetMode("default");
     $("#adminCodeError").textContent = "";
     history.replaceState(null, "", `?role=admin`);
     showScreen("adminSetupScreen");
@@ -111,7 +148,7 @@ function initActions(){
       questionsPerRound: Number($("#questionsPerRound").value),
       time: Number($("#questionTime").value),
       maxPlayers: Number($("#maxPlayers").value),
-      questionsSheetUrl: $("#questionsSheetUrl").value.trim()
+      questionsSheetUrl: getSelectedQuestionsSheetUrl()
     }, code);
 
     if(!result.ok){
@@ -177,6 +214,39 @@ function initActions(){
     history.replaceState(null, "", `?code=${code}&role=projection`);
     showScreen("projectionScreen");
     render(engine.getState());
+  });
+
+  $("#sheetModeDefault")?.addEventListener("change", event => { if(event.target.checked) applySheetMode("default"); });
+  $("#sheetModeCustom")?.addEventListener("change", event => { if(event.target.checked) applySheetMode("custom"); });
+  $("#questionsSheetUrl")?.addEventListener("input", event => {
+    if($("#sheetModeCustom")?.checked) customSheetUrlCache = event.target.value;
+  });
+  $("#testQuestionsSheetBtn")?.addEventListener("click", async () => {
+    const button = $("#testQuestionsSheetBtn");
+    const message = $("#sheetTestMessage");
+    const url = getSelectedQuestionsSheetUrl();
+    if(!url){
+      message.textContent = "Entre un lien Google Sheets.";
+      message.className = "sheet-test-message error";
+      return;
+    }
+    button.disabled = true;
+    button.textContent = "TEST EN COURS...";
+    message.textContent = "Connexion à la banque de questions...";
+    message.className = "sheet-test-message";
+    try {
+      const questions = await sheetTester.loadQuestions(url);
+      if(!questions.length) throw new Error("Aucune question valide trouvée");
+      message.textContent = `Lien valide : ${questions.length} question(s) disponible(s).`;
+      message.className = "sheet-test-message success";
+    } catch(error){
+      console.error("[Google Sheets] Test du lien échoué", error);
+      message.textContent = `Lien inaccessible ou format invalide : ${error.message}`;
+      message.className = "sheet-test-message error";
+    } finally {
+      button.disabled = false;
+      button.textContent = "TESTER LE LIEN";
+    }
   });
 
   $("#copySharedLinkBtn")?.addEventListener("click", () => copyText($("#sharedAccessLink").value));
@@ -463,6 +533,10 @@ function renderPlayer(state){
   playerGameArea.classList.toggle("final-result-mode", finalResultMode);
   $("#playerQuestionProgress").textContent = state.status === "transition" ? transitionTitle(state) : questionProgressText(state);
   $("#playerQuestion").textContent = state.status === "transition" ? transitionText() : (finalResultMode ? "Partie terminée" : (state.status === "round_results" ? `Résultats de la manche ${state.round}` : q.question));
+  const playerQuestionPoints = $("#playerQuestionPoints");
+  const hidePlayerPoints = state.status === "transition" || state.status === "round_results" || finalResultMode;
+  playerQuestionPoints.textContent = `Points : ${Number(q?.points || 0)}`;
+  playerQuestionPoints.classList.toggle("hidden", hidePlayerPoints);
   $("#playerTimer").textContent = formatTime(state.remainingTime);
 
   // Sur l'écran final, seuls le titre, le score cumulé et le classement restent visibles.
@@ -556,6 +630,10 @@ function renderProjection(state){
   if(showWaiting){ $("#projectionRanking").innerHTML = ""; return; }
   // Le panneau projection affiche la progression. Le grand compteur reste séparé.
   $("#projectionInfoPanel").innerHTML = `<span>Question <b>${questionInRound(state)} / ${state.config.questionsPerRound}</b></span><span>Manche <b>${state.round} / ${state.config.rounds}</b></span>`;
+  const projectionQuestionPoints = $("#projectionQuestionPoints");
+  const hideProjectionPoints = showTransition || state.status === "round_results" || state.status === "finished";
+  projectionQuestionPoints.textContent = `Points : ${Number(q?.points || 0)}`;
+  projectionQuestionPoints.classList.toggle("hidden", hideProjectionPoints);
   $("#projectionQuestion").textContent = showTransition ? transitionText() : (state.status === "finished" ? "Classement final" : (state.status === "round_results" ? `Résultats de la manche ${state.round}` : q.question));
   $("#projectionTimer").textContent = showTransition ? "" : formatTime(state.remainingTime);
   state.corrected && state.status !== "finished" ? showPublicAnswer("#projectionCorrectAnswer", q.correctAnswer) : hidePublicAnswer("#projectionCorrectAnswer");
@@ -578,11 +656,25 @@ function calculateRemainingSeconds(state, now = Date.now()){
   return Math.max(0, Number(state.remainingTime || 0));
 }
 
+let fiveSecondAudioKey = "";
+function getFiveSecondAudio(){ return document.getElementById("endSound"); }
+function stopFiveSecondAudio(){ const audio = getFiveSecondAudio(); if(!audio) return; audio.pause(); audio.currentTime = 0; }
+function maybePlayFiveSecondAudio(state, seconds){
+  if(!state || state.status !== "running" || !state.timerStartedAt) return;
+  const key = `${state.gameCode || state.code || "game"}-${state.currentQuestionIndex}-${state.timerStartedAt}`;
+  if(seconds <= 5 && seconds > 0 && fiveSecondAudioKey !== key){
+    fiveSecondAudioKey = key;
+    const audio = getFiveSecondAudio();
+    if(audio){ audio.currentTime = 0; audio.play().catch(() => {}); }
+  }
+}
+
 function updateClockDisplays(){
   const state = latestState;
   if(state){
     const seconds = calculateRemainingSeconds(state);
     const text = formatTime(seconds);
+    maybePlayFiveSecondAudio(state, seconds);
     if(currentRole === "admin" && $("#adminTimer")) $("#adminTimer").textContent = text;
     if(currentRole === "player" && $("#playerTimer")) $("#playerTimer").textContent = text;
     if(currentRole === "projection" && $("#projectionTimer")) $("#projectionTimer").textContent = text;
@@ -590,6 +682,7 @@ function updateClockDisplays(){
     // Seul l'arbitre verrouille officiellement la question à l'échéance.
     if(currentRole === "admin" && state.status === "running" && seconds <= 0 && !clockLockPending){
       clockLockPending = true;
+      stopFiveSecondAudio();
       engine.stopTimer().finally(() => { clockLockPending = false; });
     }
   }
@@ -616,7 +709,7 @@ async function startApplication(){
   initActions();
   await initFromUrl();
   updateClockDisplays();
-  console.log("[BIBELQUIZZ 1.6.3] Firebase + Google Sheets démarrés");
+  console.log("[BIBELQUIZZ 1.7.1] Firebase + Google Sheets démarrés");
 }
 
 startApplication();

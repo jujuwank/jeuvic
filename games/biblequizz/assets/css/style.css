@@ -949,3 +949,464 @@ button:disabled.btn,
   .role-return-wrap{margin-top:34px;padding-top:24px}
   .role-return-btn{min-width:100%}
 }
+
+/*=========================================================
+  BIBELQUIZZ V1.6.4 — MOBILE UX PASS
+  Optimisation complète des écrans téléphone.
+=========================================================*/
+@media (max-width: 760px){
+  :root{
+    --mobile-gutter:14px;
+    --mobile-radius:20px;
+    --mobile-control-height:54px;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 12% 0%,rgba(79,140,255,.18),transparent 34%),
+      radial-gradient(circle at 100% 100%,rgba(244,197,66,.10),transparent 30%),
+      var(--bg);
+    overflow-x:hidden;
+  }
+
+  .app-header{
+    min-height:62px;
+    padding:12px var(--mobile-gutter);
+    flex-direction:row;
+    gap:10px;
+    align-items:center;
+    position:sticky;
+  }
+  .brand-wrap,.brand{
+    min-width:0;
+  }
+  .brand{
+    font-size:.88rem;
+    letter-spacing:.045em;
+    white-space:nowrap;
+  }
+  .creator-mark{
+    display:none;
+  }
+  .back-link{
+    font-size:.76rem;
+    white-space:nowrap;
+  }
+
+  main{
+    padding:18px var(--mobile-gutter) 30px;
+  }
+  .screen.active{
+    animation:mobileScreenIn .28s ease both;
+  }
+  @keyframes mobileScreenIn{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:none}
+  }
+
+  .panel,
+  .projection-card{
+    width:100%;
+    margin:0 0 16px;
+    padding:20px 16px;
+    border-radius:var(--mobile-radius);
+    box-shadow:0 18px 45px rgba(0,0,0,.28);
+  }
+  .setup-panel,.player-panel,.lobby-panel,.admin-board{
+    max-width:none;
+  }
+
+  h1{
+    font-size:clamp(1.9rem,10vw,2.65rem);
+    line-height:1.05;
+    letter-spacing:-.035em;
+  }
+  h2{
+    font-size:clamp(1.55rem,8vw,2.15rem);
+    line-height:1.12;
+  }
+  .eyebrow{
+    font-size:.72rem;
+    letter-spacing:.16em;
+  }
+  p,small,label{
+    line-height:1.45;
+  }
+
+  .grid.two{
+    grid-template-columns:1fr;
+    gap:14px;
+    margin:18px 0;
+  }
+  input,select,.btn{
+    min-height:var(--mobile-control-height);
+    border-radius:15px;
+  }
+  input,select{
+    padding:14px 15px;
+    font-size:16px; /* évite le zoom automatique iOS */
+  }
+  .btn{
+    width:100%;
+    padding:14px 16px;
+    font-size:.92rem;
+    letter-spacing:.015em;
+  }
+  .actions,.actions.split{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-top:16px;
+  }
+
+  /* Accueil / parties */
+  #homeScreen .setup-panel{
+    padding:24px 16px;
+    border-radius:22px;
+  }
+  #homeScreen .setup-panel > p,
+  #homeScreen .setup-panel > h1{
+    text-align:left;
+  }
+  .game-card,.room-card{
+    padding:16px;
+    border-radius:18px;
+  }
+  .game-card-actions,.room-card-actions{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+  .empty-games-state{
+    min-height:180px!important;
+    padding:24px 14px;
+  }
+
+  /* Formulaire joueur */
+  #playerJoinScreen .player-panel{
+    padding:24px 16px;
+  }
+  #playerJoinScreen .join-row,
+  #projectionJoinScreen .join-row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:11px;
+  }
+  #playerJoinScreen #playerGameCode,
+  #projectionJoinScreen #projectionGameCode{
+    text-align:left;
+    letter-spacing:.18em;
+    font-weight:900;
+  }
+  .role-return-wrap{
+    margin-top:28px;
+    padding-top:20px;
+  }
+  .role-return-btn{
+    min-height:52px;
+    font-size:.88rem;
+  }
+
+  /* Attente joueur */
+  .waiting-screen{
+    min-height:360px;
+    padding:28px 16px;
+    border-radius:20px;
+  }
+  .waiting-pill{
+    width:100%;
+    border-radius:16px;
+    padding:14px;
+  }
+
+  /* Question joueur : priorité à la lisibilité et au tactile */
+  #playerGameArea{
+    display:grid;
+    gap:14px;
+  }
+  .player-question{
+    padding:18px 16px;
+    gap:13px;
+    border-radius:20px;
+  }
+  #playerQuestionProgress{
+    font-size:.7rem;
+  }
+  #playerQuestion{
+    font-size:clamp(1.55rem,7.5vw,2.15rem);
+    line-height:1.14;
+    overflow-wrap:anywhere;
+  }
+  .player-timer-line{
+    min-height:54px;
+    padding:11px 13px;
+    border-radius:14px;
+    font-size:.72rem;
+  }
+  #playerTimer{
+    margin-left:auto;
+    font-size:1.65rem;
+  }
+  #playerOptions.choice-list{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  #playerOptions .choice{
+    min-height:64px;
+    padding:12px 14px;
+    gap:12px;
+    border-radius:17px;
+    touch-action:manipulation;
+  }
+  #playerOptions .choice:active{
+    transform:scale(.985);
+  }
+  #playerOptions .choice-letter{
+    flex-basis:38px;
+    width:38px;
+    height:38px;
+    border-radius:11px;
+  }
+  #playerOptions .choice-text{
+    font-size:1rem;
+    line-height:1.32;
+  }
+  #playerGameArea > label{
+    padding:14px;
+    border-radius:17px;
+  }
+  #playerAnswer{
+    min-height:56px;
+  }
+  .public-answer{
+    margin:0;
+    padding:16px;
+    border-radius:18px;
+  }
+  .public-answer strong{
+    font-size:1.55rem;
+  }
+  .player-score-badge{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:62px;
+    padding:13px 15px;
+    border-radius:17px;
+  }
+  .player-score-badge span{
+    font-size:.72rem;
+    letter-spacing:.07em;
+  }
+  .player-score-badge strong{
+    white-space:nowrap;
+    font-size:1.35rem;
+  }
+
+  /* Écran final joueur */
+  #playerGameArea.final-result-mode{
+    gap:18px;
+  }
+  #playerGameArea.final-result-mode .player-question{
+    padding:20px 16px;
+  }
+  .final-ranking{
+    overflow:hidden;
+    border-radius:18px;
+  }
+  .rank-row{
+    min-width:0;
+    width:100%;
+    gap:14px;
+    padding:13px 12px;
+    font-size:.92rem;
+  }
+
+  /* Interface arbitre sur téléphone */
+  .question-head{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+  .question-head h2{
+    font-size:1.75rem;
+  }
+  .timer-box{
+    min-width:0;
+    width:100%;
+    padding:13px 15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    text-align:left;
+  }
+  .timer-box strong{
+    font-size:2rem;
+  }
+  .meta-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin:14px 0;
+  }
+  .meta-row span{
+    padding:11px;
+    border-radius:13px;
+    background:rgba(255,255,255,.055);
+    font-size:.82rem;
+  }
+  .answer-box{
+    padding:14px;
+  }
+  .answers-table{
+    display:block;
+    overflow-x:auto;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+  }
+  .answers-table th,.answers-table td{
+    padding:11px 10px;
+    font-size:.8rem;
+  }
+  .admin-ranking-drawer{
+    left:0;
+    right:0;
+    width:100%;
+    max-height:72vh;
+    border-radius:22px 22px 0 0;
+    padding:16px;
+  }
+  .admin-ranking-head{
+    display:grid;
+    gap:12px;
+  }
+
+  /* Projection consultée sur téléphone */
+  .projection-card{
+    min-height:calc(100dvh - 112px);
+    padding:24px 16px;
+    justify-content:flex-start;
+    gap:18px;
+  }
+  .projection-card h1{
+    font-size:clamp(1.8rem,9vw,2.7rem);
+    line-height:1.12;
+  }
+  .projection-info-panel{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+    gap:8px;
+    margin:0;
+  }
+  .projection-info-panel span{
+    border-radius:13px;
+    padding:10px;
+    font-size:.76rem;
+  }
+  #projectionTimer{
+    font-size:2.5rem;
+  }
+  .projection-options{
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .game-footer{
+    padding:18px var(--mobile-gutter);
+    gap:6px;
+    align-items:center;
+    text-align:center;
+    font-size:.66rem;
+  }
+}
+
+@media (max-width: 390px){
+  :root{--mobile-gutter:10px}
+  .app-header{padding-inline:10px}
+  .brand{font-size:.78rem}
+  .back-link{font-size:.7rem}
+  .panel,.projection-card{padding:17px 13px;border-radius:18px}
+  h1{font-size:1.85rem}
+  #playerQuestion{font-size:1.48rem}
+  .meta-row{grid-template-columns:1fr}
+  .projection-info-panel{grid-template-columns:1fr}
+}
+
+
+/*=========================================================
+  BIBLEQUIZZ V1.7.0 — Sélecteur de banque Google Sheets
+=========================================================*/
+.sheet-config-box{
+  margin-top:22px;
+  padding:22px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:linear-gradient(145deg,rgba(79,140,255,.09),rgba(255,255,255,.035));
+}
+.sheet-config-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.sheet-config-head h3{margin-top:5px;font-size:1.18rem}
+.sheet-default-badge{padding:8px 11px;border-radius:999px;background:rgba(244,197,66,.12);border:1px solid rgba(244,197,66,.32);color:var(--gold);font-size:.78rem;font-weight:800;white-space:nowrap}
+.sheet-mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0 18px}
+.sheet-mode-card{display:flex;grid-template-columns:none;align-items:flex-start;gap:12px;padding:16px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.04);cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.sheet-mode-card:hover{transform:translateY(-1px);border-color:rgba(244,197,66,.42)}
+.sheet-mode-card.selected{border-color:var(--gold);background:rgba(244,197,66,.1);box-shadow:0 0 0 1px rgba(244,197,66,.12) inset}
+.sheet-mode-card input{width:18px;height:18px;margin-top:2px;accent-color:var(--gold);flex:0 0 auto}
+.sheet-mode-card span{display:grid;gap:5px}
+.sheet-mode-card strong{color:var(--text)}
+.sheet-mode-card small{color:var(--muted);font-weight:500;line-height:1.35}
+.sheet-url-label{margin-top:4px}
+#questionsSheetUrl[readonly]{opacity:.82;cursor:not-allowed;background:rgba(255,255,255,.045)}
+.sheet-test-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:14px 0 10px}
+.sheet-test-message{margin:0;min-height:20px;color:var(--muted);font-size:.9rem;font-weight:700}
+.sheet-test-message.success{color:var(--green)}
+.sheet-test-message.error{color:#ff8c98}
+@media(max-width:700px){
+  .sheet-config-box{padding:17px}
+  .sheet-config-head{flex-direction:column}
+  .sheet-mode-grid{grid-template-columns:1fr}
+  .sheet-default-badge{white-space:normal}
+  .sheet-test-row .btn{width:100%}
+}
+
+
+/*============================================================
+  BIBLEQUIZZ V1.7.1 — POINTS DE LA QUESTION JOUEUR / PROJECTION
+============================================================*/
+.player-question-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.player-question-meta #playerQuestionProgress{
+  margin:0;
+}
+.question-points-label{
+  color:var(--gold);
+  font-size:clamp(.92rem,2.6vw,1.08rem);
+  font-weight:900;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.projection-question-points{
+  margin:-14px 0 16px;
+  color:var(--gold);
+  font-size:clamp(1rem,2vw,1.35rem);
+  font-weight:900;
+  letter-spacing:.02em;
+}
+@media(max-width:600px){
+  .player-question-meta{
+    align-items:flex-start;
+  }
+  .question-points-label{
+    font-size:.9rem;
+  }
+  .projection-question-points{
+    margin:-6px 0 4px;
+    font-size:1rem;
+  }
+}

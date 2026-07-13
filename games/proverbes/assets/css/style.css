@@ -1,0 +1,218 @@
+:root{--bg:#070b19;--panel:#11182d;--panel2:#1b2440;--line:#2e3b62;--gold:#f8c63d;--text:#f8fafc;--muted:#aab4ce;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#7c3aed}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#151b39 0,#070b19 42%,#050711 100%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}.topbar{height:72px;border-bottom:1px solid #26304c;display:flex;align-items:center;justify-content:space-between;padding:0 4vw}.brand{color:var(--text);text-decoration:none;font-weight:800;letter-spacing:.04em}.brand b{color:var(--gold)}.signature{font-size:11px;color:#77809a}.signature b{color:var(--gold)}.wrap{width:min(1500px,94vw);margin:36px auto}.hero{text-align:center;margin:10px 0 28px}.hero h1{font-size:clamp(42px,7vw,86px);margin:0}.hero p{color:var(--muted)}.card{background:linear-gradient(145deg,rgba(28,37,68,.97),rgba(13,19,39,.97));border:1px solid #34416c;border-radius:24px;padding:28px;box-shadow:0 18px 55px rgba(0,0,0,.3)}.grid{display:grid;gap:22px}.grid.two{grid-template-columns:1.6fr .8fr}.actions{display:flex;gap:12px;flex-wrap:wrap}.btn{border:0;border-radius:14px;padding:14px 20px;font-weight:900;cursor:pointer;color:#fff;background:#273354}.btn.primary{background:linear-gradient(135deg,#f4b91e,#ffd75c);color:#111}.btn.secondary{background:#2e3b62}.btn.good{background:#15803d}.btn.bad{background:#b91c1c}.btn:disabled{opacity:.38;cursor:not-allowed}.input{width:100%;background:#141c34;border:1px solid #3b4668;border-radius:14px;padding:15px;color:#fff;font-size:16px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.form-grid .full{grid-column:1/-1}.rooms{display:grid;gap:14px}.room{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px;border:1px solid #34416c;border-radius:16px;background:#131b31}.code{color:var(--gold);font-weight:900;letter-spacing:.14em}.role-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.role{padding:32px;text-align:center;cursor:pointer}.role h2{font-size:28px}.phrase{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 12px;margin:28px auto;max-width:1200px}.char{width:42px;height:54px;border-bottom:4px solid #8791ad;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;text-transform:uppercase}.char.space{width:28px;border:0}.char.punct{border:0;width:auto}.keyboard{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:24px}.key{padding:13px 5px;background:#263354;border:1px solid #3a486f;color:white;border-radius:10px;font-weight:900}.key.hit{background:#176b3b}.key.miss{background:#782b33}.key:disabled{opacity:.5}.status{padding:14px 16px;background:#242044;border-radius:14px}.player-row{display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:center;padding:13px;border-radius:13px;background:#151d34;margin:8px 0}.dot{width:14px;height:14px;border-radius:50%}.score{color:var(--gold);font-weight:900}.draft-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:7px 10px;margin:24px 0}.draft-input{width:38px;height:48px;text-align:center;text-transform:uppercase;font-size:24px;font-weight:900;border:1px solid #46547c;border-radius:8px;background:#10172a;color:#fff}.draft-input.locked{background:#1d5f39;border-color:#22c55e}.draft-input.wrong{background:#6f202b;border-color:#ef4444}.draft-space{width:20px}.validation-card{border:1px solid #4d5e8a;border-radius:18px;padding:20px;background:#10182e}.validation-phrase{display:flex;flex-wrap:wrap;gap:5px;font-size:26px;font-weight:900}.validation-phrase .ok{color:#22c55e}.validation-phrase .bad{color:#ef4444}.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.42);backdrop-filter:blur(14px);z-index:20;padding:20px}.overlay.open{display:flex}.modal{width:min(720px,95vw);background:#151d34;border:1px solid #56648d;border-radius:24px;padding:28px;animation:zoom .2s ease}@keyframes zoom{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}.notice{color:var(--muted)}.cooldown{background:#2b213c;border:1px solid #5b3e7e;border-radius:14px;padding:14px;margin:14px 0}.winner{font-size:clamp(36px,6vw,72px);color:var(--gold);text-align:center}.reveal .char{animation:pop .32s ease}@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.8)}to{opacity:1;transform:none}}@media(max-width:850px){.grid.two,.role-grid,.form-grid{grid-template-columns:1fr}.keyboard{grid-template-columns:repeat(6,1fr)}.card{padding:18px}.wrap{width:94vw;margin:20px auto}.char{width:30px;height:43px;font-size:23px}.draft-input{width:31px;height:42px;font-size:21px}.topbar{height:58px;padding:0 16px}.signature{font-size:9px}.actions .btn{flex:1 1 45%}.room{align-items:flex-start;flex-direction:column}}
+
+/* =========================================================
+   PROVERBES V1.0.1 — lisibilité des phrases et mobile
+   Un mot reste toujours entier : seuls les groupes de mots
+   passent à la ligne, jamais les caractères d'un même mot.
+========================================================= */
+.phrase,.draft-grid,.validation-phrase{
+  align-items:center;
+  align-content:center;
+  row-gap:18px;
+}
+.word-group{
+  display:inline-flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+.word-space{
+  display:inline-block;
+  flex:0 0 22px;
+  width:22px;
+  height:1px;
+}
+.validation-word{gap:4px}
+.validation-char{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:24px;
+  min-height:36px;
+  padding:3px 5px;
+  border-radius:7px;
+  background:#111a30;
+  border:1px solid #3b496f;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.validation-char.ok{color:#fff;background:#176b3b;border-color:#22c55e}
+.validation-char.bad{color:#fff;background:#782b33;border-color:#ef4444}
+.validation-char.neutral{color:#d5dbea;background:#161f37;border-color:#46547c}
+.new-letter{
+  animation:letterReveal .32s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay:var(--reveal-delay,0ms);
+}
+@keyframes letterReveal{
+  0%{opacity:0;transform:translateY(9px) scale(.72);filter:brightness(1.8)}
+  70%{opacity:1;transform:translateY(-2px) scale(1.08)}
+  100%{opacity:1;transform:none;filter:none}
+}
+
+@media(max-width:850px){
+  .hero{margin-bottom:18px}
+  .hero h1{font-size:clamp(36px,13vw,62px);line-height:1.02}
+  .hero p{font-size:14px;line-height:1.45}
+  .card{border-radius:20px;padding:16px}
+  .phrase,.draft-grid{justify-content:flex-start;overflow-x:hidden;gap:10px 0;margin:20px 0}
+  .word-group{gap:4px;max-width:100%}
+  .word-space{width:12px;flex-basis:12px}
+  .char{width:26px;height:39px;font-size:20px;border-bottom-width:3px}
+  .draft-input{width:28px;height:40px;font-size:20px;border-radius:7px;padding:0}
+  .keyboard{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+  .key{padding:12px 2px;font-size:14px;border-radius:9px}
+  .validation-card{padding:15px}
+  .validation-phrase{justify-content:flex-start;gap:9px 0}
+  .validation-char{min-width:21px;min-height:32px;padding:2px 4px;font-size:17px}
+  .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .actions .btn{width:100%;min-height:50px;padding:12px 10px;font-size:13px}
+  .player-row{grid-template-columns:16px minmax(0,1fr) auto;padding:12px 10px}
+  .room .actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:430px){
+  .wrap{width:96vw;margin:14px auto}
+  .topbar{padding:0 12px}
+  .brand{font-size:13px}
+  .phrase,.draft-grid{row-gap:14px}
+  .char{width:23px;height:36px;font-size:18px}
+  .draft-input{width:25px;height:37px;font-size:18px}
+  .word-group{gap:3px}
+  .word-space{width:9px;flex-basis:9px}
+  .keyboard{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .actions{grid-template-columns:1fr}
+  .room .actions{grid-template-columns:1fr 1fr}
+  .btn{border-radius:12px}
+}
+
+/* =========================================================
+   PROVERBES V1.0.2 — stabilité d'affichage et Google Sheets
+========================================================= */
+.game-title{
+  color:var(--gold);
+  text-shadow:0 0 28px rgba(248,198,61,.12);
+}
+.player-name{
+  color:var(--player-color,var(--gold));
+  text-shadow:0 0 30px color-mix(in srgb,var(--player-color,var(--gold)) 35%,transparent);
+}
+.sheet-test-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+/* Chaque mot occupe au maximum la largeur disponible.
+   Les caractères rétrécissent ensemble sans casser le mot. */
+.phrase,.draft-grid,.validation-phrase{
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  justify-content:center;
+}
+.word-group{
+  display:grid;
+  grid-template-columns:repeat(var(--word-length),minmax(0,1fr));
+  width:min(100%,calc(var(--word-length) * 49px));
+  max-width:100%;
+  gap:7px;
+  white-space:nowrap;
+  flex:0 1 auto;
+}
+.word-group .char,
+.word-group .draft-input{
+  width:100%;
+  min-width:0;
+}
+.new-letter{
+  opacity:1;
+  visibility:visible;
+  animation-name:letterRevealStable;
+  animation-duration:.34s;
+  animation-timing-function:cubic-bezier(.2,.8,.2,1);
+  animation-delay:var(--reveal-delay,0ms);
+  animation-fill-mode:none;
+}
+@keyframes letterRevealStable{
+  0%{transform:translateY(8px) scale(.78);filter:brightness(1.9)}
+  70%{transform:translateY(-2px) scale(1.08)}
+  100%{transform:none;filter:none}
+}
+
+@media(max-width:850px){
+  .word-group{
+    width:min(100%,calc(var(--word-length) * 34px));
+    gap:4px;
+  }
+  .phrase,.draft-grid,.validation-phrase{
+    justify-content:center;
+  }
+  .sheet-test-row{
+    align-items:stretch;
+    flex-direction:column;
+  }
+}
+@media(max-width:430px){
+  .word-group{
+    width:min(100%,calc(var(--word-length) * 28px));
+    gap:3px;
+  }
+  .char{font-size:clamp(15px,5vw,18px)}
+  .draft-input{font-size:clamp(15px,5vw,18px)}
+}
+.topbar-actions{display:flex;align-items:center;gap:18px}.back-jeuvic{color:var(--muted);text-decoration:none;font-size:13px;font-weight:700}.back-jeuvic:hover{color:var(--gold)}
+@media(max-width:560px){.back-jeuvic{font-size:11px}.topbar-actions{gap:10px}.signature{display:none}}
+
+/* =========================================================
+   PROVERBES V1.0.3 — proposition arbitre et délai des lettres
+========================================================= */
+.referee-side{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.side-validation{
+  order:1;
+  width:100%;
+  overflow:hidden;
+}
+.side-validation + h3{order:2}
+.side-validation ~ .player-row{order:3}
+.side-validation ~ .actions{order:4}
+.validation-phrase{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px 18px;
+  width:100%;
+  overflow:visible;
+}
+.validation-phrase .validation-word{
+  display:inline-flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center;
+  gap:4px;
+  width:auto !important;
+  max-width:100%;
+  grid-template-columns:none !important;
+  white-space:nowrap;
+}
+.validation-actions{
+  display:flex;
+  flex-wrap:wrap;
+}
+.validation-actions .btn{
+  flex:1 1 120px;
+}
+
+@media(max-width:850px){
+  .side-validation{order:0}
+  .validation-phrase{gap:10px 12px}
+  .validation-char{min-width:20px;min-height:31px;font-size:16px}
+}
